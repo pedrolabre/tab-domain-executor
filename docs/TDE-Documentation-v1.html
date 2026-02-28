@@ -1,0 +1,2427 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TDE — Documentação v1</title>
+  <style>
+    /* ─── Reset & Tokens ───────────────────────────────────────────────── */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --blue:        #4285f4;
+      --blue-dark:   #3367d6;
+      --blue-deeper: #1a56db;
+      --blue-faint:  #e8f0fe;
+      --red:         #e53935;
+      --red-faint:   #fdecea;
+      --white:       #ffffff;
+      --gray-100:    #f8f9fa;
+      --gray-200:    #f1f3f4;
+      --gray-300:    #dadce0;
+      --gray-500:    #9aa0a6;
+      --gray-700:    #5f6368;
+      --gray-900:    #202124;
+      --radius-sm:   6px;
+      --radius-md:   12px;
+      --radius-lg:   20px;
+      --shadow-sm:   0 1px 3px rgba(0,0,0,.12), 0 1px 2px rgba(0,0,0,.08);
+      --shadow-md:   0 4px 16px rgba(0,0,0,.10);
+      --shadow-lg:   0 8px 32px rgba(0,0,0,.12);
+      --font:        -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      --font-mono:   'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+      --sidebar-w:   260px;
+      --header-h:    64px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font);
+      background: var(--gray-100);
+      color: var(--gray-900);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* ─── Top Header ───────────────────────────────────────────────────── */
+    .topbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: var(--header-h);
+      background: var(--blue);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 0 28px;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,.20);
+    }
+
+    .topbar-icon {
+      width: 36px; height: 36px;
+      flex-shrink: 0;
+    }
+
+    .topbar-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: .3px;
+    }
+
+    .topbar-title span {
+      font-weight: 300;
+      opacity: .85;
+      margin-left: 6px;
+    }
+
+    .topbar-badge {
+      margin-left: auto;
+      background: rgba(255,255,255,.18);
+      color: var(--white);
+      font-size: .72rem;
+      font-weight: 600;
+      letter-spacing: .8px;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,.30);
+    }
+
+    /* ─── Layout ───────────────────────────────────────────────────────── */
+    .layout {
+      display: flex;
+      margin-top: var(--header-h);
+      min-height: calc(100vh - var(--header-h));
+    }
+
+    /* ─── Sidebar ──────────────────────────────────────────────────────── */
+    .sidebar {
+      width: var(--sidebar-w);
+      flex-shrink: 0;
+      position: fixed;
+      top: var(--header-h);
+      left: 0;
+      bottom: 0;
+      background: var(--white);
+      border-right: 1px solid var(--gray-300);
+      overflow-y: auto;
+      padding: 24px 0 40px;
+    }
+
+    .sidebar-group-label {
+      font-size: .68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--gray-500);
+      padding: 16px 20px 6px;
+    }
+
+    .sidebar-group-label:first-child { padding-top: 4px; }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 20px;
+      font-size: .88rem;
+      color: var(--gray-700);
+      text-decoration: none;
+      border-left: 3px solid transparent;
+      transition: background .15s, color .15s, border-color .15s;
+      cursor: pointer;
+    }
+
+    .nav-item:hover {
+      background: var(--blue-faint);
+      color: var(--blue);
+    }
+
+    .nav-item.active {
+      background: var(--blue-faint);
+      color: var(--blue);
+      border-left-color: var(--blue);
+      font-weight: 600;
+    }
+
+    .nav-item .nav-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--gray-300);
+      flex-shrink: 0;
+      transition: background .15s;
+    }
+
+    .nav-item:hover .nav-dot,
+    .nav-item.active .nav-dot {
+      background: var(--blue);
+    }
+
+    /* ─── Main Content ─────────────────────────────────────────────────── */
+    .main {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      padding: 48px 56px 80px;
+      max-width: 980px;
+    }
+
+    /* ─── Section ──────────────────────────────────────────────────────── */
+    .section {
+      margin-bottom: 72px;
+      scroll-margin-top: calc(var(--header-h) + 24px);
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 28px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid var(--gray-200);
+    }
+
+    .section-icon {
+      width: 40px; height: 40px;
+      border-radius: var(--radius-md);
+      background: var(--blue);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .section-icon svg { width: 20px; height: 20px; }
+
+    .section-icon.red   { background: var(--red); }
+    .section-icon.dark  { background: var(--gray-900); }
+    .section-icon.teal  { background: #0097a7; }
+    .section-icon.green { background: #34a853; }
+    .section-icon.purple{ background: #7c3aed; }
+    .section-icon.amber { background: #f59e0b; }
+
+    .section-title {
+      font-size: 1.55rem;
+      font-weight: 700;
+      color: var(--gray-900);
+      line-height: 1.2;
+    }
+
+    .section-subtitle {
+      font-size: .9rem;
+      color: var(--gray-500);
+      margin-top: 2px;
+    }
+
+    /* ─── Placeholder Card ─────────────────────────────────────────────── */
+    .placeholder {
+      background: var(--white);
+      border: 2px dashed var(--gray-300);
+      border-radius: var(--radius-md);
+      padding: 48px 32px;
+      text-align: center;
+      color: var(--gray-500);
+    }
+
+    .placeholder-icon {
+      font-size: 2rem;
+      margin-bottom: 12px;
+    }
+
+    .placeholder-text {
+      font-size: .95rem;
+      font-weight: 500;
+    }
+
+    .placeholder-hint {
+      font-size: .82rem;
+      margin-top: 6px;
+      opacity: .7;
+    }
+
+    /* ─── Scrollbar ────────────────────────────────────────────────────── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--gray-300); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--gray-500); }
+  </style>
+</head>
+<body>
+
+<!-- ═══ TOP BAR ═══════════════════════════════════════════════════════════ -->
+<header class="topbar">
+  <!-- TDE inline SVG icon -->
+  <svg class="topbar-icon" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+    <rect width="128" height="128" rx="16" fill="rgba(255,255,255,.15)"/>
+    <line x1="96" y1="96" x2="46" y2="48" stroke="#e53935" stroke-width="16" stroke-linecap="round"/>
+    <line x1="42" y1="82" x2="96" y2="32" stroke="#e53935" stroke-width="16" stroke-linecap="round"/>
+    <line x1="36" y1="32" x2="86" y2="82" stroke="#fff" stroke-width="14" stroke-linecap="round"/>
+    <line x1="86" y1="48" x2="32" y2="96" stroke="#fff" stroke-width="14" stroke-linecap="round"/>
+  </svg>
+
+  <div class="topbar-title">
+    Tab Domain Executor
+    <span>Documentação</span>
+  </div>
+
+  <div class="topbar-badge">v 1.0</div>
+</header>
+
+<!-- ═══ LAYOUT ═══════════════════════════════════════════════════════════ -->
+<div class="layout">
+
+  <!-- ─── SIDEBAR ────────────────────────────────────────────────────── -->
+  <nav class="sidebar">
+
+    <div class="sidebar-group-label">Início</div>
+    <a class="nav-item active" href="#introducao"><span class="nav-dot"></span>Introdução</a>
+    <a class="nav-item" href="#overview"><span class="nav-dot"></span>Overview</a>
+    <a class="nav-item" href="#quick-start"><span class="nav-dot"></span>Quick Start</a>
+
+    <div class="sidebar-group-label">Especificação</div>
+    <a class="nav-item" href="#funcionalidades"><span class="nav-dot"></span>Funcionalidades</a>
+    <a class="nav-item" href="#req-funcionais"><span class="nav-dot"></span>Requisitos Funcionais</a>
+    <a class="nav-item" href="#req-nao-funcionais"><span class="nav-dot"></span>Requisitos Não Funcionais</a>
+
+    <div class="sidebar-group-label">Modelagem</div>
+    <a class="nav-item" href="#casos-de-uso"><span class="nav-dot"></span>Casos de Uso</a>
+    <a class="nav-item" href="#diagramas"><span class="nav-dot"></span>Diagramas de Casos de Uso</a>
+
+    <div class="sidebar-group-label">Técnico</div>
+    <a class="nav-item" href="#arquitetura"><span class="nav-dot"></span>Arquitetura</a>
+    <a class="nav-item" href="#tecnologias"><span class="nav-dot"></span>Tecnologias</a>
+    <a class="nav-item" href="#desenvolvimento"><span class="nav-dot"></span>Desenvolvimento</a>
+
+  </nav>
+
+  <!-- ─── MAIN ───────────────────────────────────────────────────────── -->
+  <main class="main">
+
+    <!-- ══ 1. INTRODUÇÃO ══════════════════════════════════════════════ -->
+    <section class="section" id="introducao">
+      <div class="section-header">
+        <div class="section-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+          </svg>
+        </div>
+        <div>
+          <div class="section-title">Introdução</div>
+          <div class="section-subtitle">O que é o TDE e por que ele existe</div>
+        </div>
+      </div>
+
+      <!-- Lead -->
+      <p class="lead">O <strong>Tab Domain Executor (TDE)</strong> é uma extensão para Google Chrome que oferece uma forma deliberada, segura e reversível de fechar abas agrupadas por domínio. Não é um gerenciador automático — é uma ferramenta de execução controlada, projetada para quando o usuário sabe exatamente o que quer fazer.</p>
+
+      <!-- Problem -->
+      <div class="card mt-lg">
+        <div class="card-label">O Problema</div>
+        <p>Navegadores modernos acumulam dezenas (ou centenas) de abas espalhadas em múltiplas janelas. Fechar abas manualmente é tedioso, propenso a erros e, na maioria das vezes, irreversível. As extensões existentes ou automatizam demais (tirando o controle do usuário) ou são complexas demais para uma tarefa simples.</p>
+        <div class="problem-grid mt-md">
+          <div class="problem-item">
+            <span class="problem-icon">😩</span>
+            <strong>Fechamento manual</strong>
+            <span>Clicar no X de cada aba individualmente, uma por uma</span>
+          </div>
+          <div class="problem-item">
+            <span class="problem-icon">⚠️</span>
+            <strong>Sem contexto de escopo</strong>
+            <span>Não há visão de quantas abas de um domínio existem nem onde estão</span>
+          </div>
+          <div class="problem-item">
+            <span class="problem-icon">🔥</span>
+            <strong>Ações irreversíveis</strong>
+            <span>Uma vez fechadas por engano, as abas desaparecem sem recuperação</span>
+          </div>
+          <div class="problem-item">
+            <span class="problem-icon">🤖</span>
+            <strong>Automação excessiva</strong>
+            <span>Ferramentas que decidem por você, sem a confirmação do que será afetado</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Solution / Philosophy -->
+      <div class="card mt-md">
+        <div class="card-label">A Filosofia do TDE</div>
+        <p>O TDE foi construído sobre três pilares que guiam cada decisão de design:</p>
+        <div class="pillars mt-md">
+          <div class="pillar">
+            <div class="pillar-icon" style="background:var(--blue)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <strong>Controle Total do Usuário</strong>
+            <span>Nenhuma ação sem intenção explícita. Cada etapa exige uma decisão consciente e o processo pode ser abandonado a qualquer momento.</span>
+          </div>
+          <div class="pillar">
+            <div class="pillar-icon" style="background:var(--red)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            </div>
+            <strong>Segurança por Design</strong>
+            <span>Ações destrutivas só são possíveis após múltiplas etapas de confirmação. Um mecanismo de recuperação de 15 minutos serve como rede de segurança.</span>
+          </div>
+          <div class="pillar">
+            <div class="pillar-icon" style="background:#34a853">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </div>
+            <strong>Transparência Absoluta</strong>
+            <span>O usuário sempre sabe o que vai acontecer: quantas abas serão fechadas, em quais janelas e com possibilidade de reverter.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scope of this doc -->
+      <div class="info-box mt-md">
+        <strong>Sobre esta documentação</strong><br/>
+        Este documento cobre a especificação completa do TDE v1 — desde a motivação e casos de uso até a arquitetura técnica e guia de desenvolvimento. Use a barra lateral para navegar entre as seções.
+      </div>
+
+      <style>
+        .lead { font-size: 1.05rem; line-height: 1.75; color: var(--gray-700); margin-bottom: 0; }
+        .mt-md { margin-top: 16px; }
+        .mt-lg { margin-top: 24px; }
+
+        .card { background: var(--white); border: 1px solid var(--gray-300); border-radius: var(--radius-md); padding: 24px; }
+        .card-label { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--blue); margin-bottom: 10px; }
+        .card p { font-size: .93rem; line-height: 1.7; color: var(--gray-700); }
+
+        .problem-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .problem-item { background: var(--gray-100); border-radius: var(--radius-sm); padding: 14px 16px; display: flex; flex-direction: column; gap: 4px; }
+        .problem-icon { font-size: 1.3rem; }
+        .problem-item strong { font-size: .88rem; color: var(--gray-900); }
+        .problem-item span { font-size: .82rem; color: var(--gray-700); line-height: 1.45; }
+
+        .pillars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+        .pillar { background: var(--gray-100); border-radius: var(--radius-sm); padding: 18px 16px; display: flex; flex-direction: column; gap: 8px; align-items: flex-start; }
+        .pillar-icon { width: 38px; height: 38px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .pillar strong { font-size: .88rem; color: var(--gray-900); line-height: 1.3; }
+        .pillar span { font-size: .81rem; color: var(--gray-700); line-height: 1.5; }
+
+        .info-box { background: var(--blue-faint); border: 1px solid #c5d9fd; border-radius: var(--radius-sm); padding: 16px 18px; font-size: .88rem; color: var(--gray-700); line-height: 1.6; }
+        .info-box strong { color: var(--blue); }
+      </style>
+    </section>
+
+    <!-- ══ 2. OVERVIEW ════════════════════════════════════════════════ -->
+    <section class="section" id="overview">
+      <div class="section-header">
+        <div class="section-icon" style="background:#0097a7">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+            <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+          </svg>
+        </div>
+        <div>
+          <div class="section-title">Overview</div>
+          <div class="section-subtitle">Visão geral do sistema e fluxo principal</div>
+        </div>
+      </div>
+
+      <!-- Intro -->
+      <p class="lead">O TDE é uma extensão Chrome (Manifest V3) construída com TypeScript e Webpack. Seu design segue uma <strong>arquitetura modular em camadas</strong> onde a UI nunca executa ações diretamente — ela apenas solicita ao background, que orquestra os módulos especializados.</p>
+
+      <!-- Main flow -->
+      <div class="card mt-lg">
+        <div class="card-label">Fluxo Principal</div>
+        <p class="sub">Toda interação no TDE segue sempre o mesmo caminho de 5 etapas:</p>
+        <div class="flow-steps mt-md">
+          <div class="flow-step">
+            <div class="step-num" style="background:var(--blue)">1</div>
+            <div class="step-body">
+              <strong>Analisar</strong>
+              <span>O usuário clica em "Analisar Abas". O sistema lê todas as abas abertas via Chrome Tabs API.</span>
+            </div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">
+            <div class="step-num" style="background:#0097a7">2</div>
+            <div class="step-body">
+              <strong>Agrupar</strong>
+              <span>As URLs são normalizadas e as abas agrupadas por domínio base (ex: <code>youtube.com</code>).</span>
+            </div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">
+            <div class="step-num" style="background:#7c3aed">3</div>
+            <div class="step-body">
+              <strong>Selecionar</strong>
+              <span>O usuário escolhe um domínio e define o escopo: todas as janelas ou janelas específicas.</span>
+            </div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">
+            <div class="step-num" style="background:var(--red)">4</div>
+            <div class="step-body">
+              <strong>Executar</strong>
+              <span>As abas selecionadas são listadas para confirmação e então fechadas em lote.</span>
+            </div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">
+            <div class="step-num" style="background:#34a853">5</div>
+            <div class="step-body">
+              <strong>Recuperar</strong>
+              <span>Caso necessário, a ação pode ser desfeita em até 15 minutos via mecanismo de recuperação.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modules -->
+      <div class="card mt-md">
+        <div class="card-label">Módulos do Sistema</div>
+        <p class="sub">O backend é composto por 5 módulos independentes, cada um com uma responsabilidade única:</p>
+        <div class="modules-grid mt-md">
+          <div class="module-card">
+            <div class="module-header" style="background:var(--blue)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M2 16.1A5 5 0 0 1 5.9 20M2 12.05A9 9 0 0 1 9.95 20M2 8V6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-6"/><line x1="2" y1="20" x2="2.01" y2="20"/></svg>
+              Tab Reader
+            </div>
+            <div class="module-body">Abstrai o acesso à Chrome Tabs API. Retorna abas e janelas brutas sem qualquer transformação.</div>
+          </div>
+          <div class="module-card">
+            <div class="module-header" style="background:#0097a7">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+              Normalizer
+            </div>
+            <div class="module-body">Extrai o domínio base de uma URL. Trata erros silenciosamente retornando <code>null</code> para URLs inválidas.</div>
+          </div>
+          <div class="module-card">
+            <div class="module-header" style="background:#7c3aed">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+              Grouper
+            </div>
+            <div class="module-body">Agrupa abas por domínio e por janela para compor os <code>DomainGroup[]</code> e <code>WindowGroup[]</code>.</div>
+          </div>
+          <div class="module-card">
+            <div class="module-header" style="background:var(--red)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+              Executor
+            </div>
+            <div class="module-body">Executa o fechamento de abas (simples ou em lote) e a restauração via <code>chrome.tabs.create()</code>.</div>
+          </div>
+          <div class="module-card">
+            <div class="module-header" style="background:#34a853">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.57"/></svg>
+              Recovery
+            </div>
+            <div class="module-body">Mantém o log da última ação em memória com TTL de 15 minutos para permitir reversão.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Data transformation -->
+      <div class="card mt-md">
+        <div class="card-label">Transformação de Dados</div>
+        <div class="data-chain mt-sm">
+          <div class="chain-item chain-source">
+            <span class="chain-type">chrome.tabs.Tab</span>
+            <span class="chain-desc">Objeto nativo do Chrome</span>
+          </div>
+          <div class="chain-arrow">
+            <span>Tab Reader</span>
+            <svg viewBox="0 0 24 6" fill="none" width="60"><path d="M0 3h20M17 1l3 2-3 2" stroke="var(--gray-500)" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+          <div class="chain-item">
+            <span class="chain-type">chrome.tabs.Tab[]</span>
+            <span class="chain-desc">Dados brutos, sem transformação</span>
+          </div>
+          <div class="chain-arrow">
+            <span>Normalizer</span>
+            <svg viewBox="0 0 24 6" fill="none" width="60"><path d="M0 3h20M17 1l3 2-3 2" stroke="var(--gray-500)" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+          <div class="chain-item">
+            <span class="chain-type">Tab[]</span>
+            <span class="chain-desc">+ campo <code>domain</code> adicionado</span>
+          </div>
+          <div class="chain-arrow">
+            <span>Grouper</span>
+            <svg viewBox="0 0 24 6" fill="none" width="60"><path d="M0 3h20M17 1l3 2-3 2" stroke="var(--gray-500)" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+          <div class="chain-item">
+            <span class="chain-type">DomainGroup[]</span>
+            <span class="chain-desc">Agregado por domínio</span>
+          </div>
+          <div class="chain-arrow">
+            <span>Popup UI</span>
+            <svg viewBox="0 0 24 6" fill="none" width="60"><path d="M0 3h20M17 1l3 2-3 2" stroke="var(--gray-500)" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+          <div class="chain-item chain-dest">
+            <span class="chain-type">Cards de Domínio</span>
+            <span class="chain-desc">Renderizados para o usuário</span>
+          </div>
+        </div>
+      </div>
+
+      <style>
+        .sub { font-size: .88rem; color: var(--gray-700); line-height: 1.6; }
+
+        /* Flow steps */
+        .flow-steps { display: flex; align-items: flex-start; gap: 6px; flex-wrap: wrap; }
+        .flow-step { display: flex; gap: 10px; align-items: flex-start; flex: 1; min-width: 130px; }
+        .step-num { width: 26px; height: 26px; border-radius: 50%; color: #fff; display: flex; align-items: center; justify-content: center; font-size: .78rem; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+        .step-body { display: flex; flex-direction: column; gap: 4px; }
+        .step-body strong { font-size: .88rem; color: var(--gray-900); }
+        .step-body span { font-size: .80rem; color: var(--gray-700); line-height: 1.45; }
+        .flow-arrow { font-size: 1.1rem; color: var(--gray-300); margin-top: 4px; flex-shrink: 0; }
+
+        /* Modules */
+        .modules-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+        .module-card { border: 1px solid var(--gray-300); border-radius: var(--radius-sm); overflow: hidden; }
+        .module-header { display: flex; align-items: center; gap: 7px; padding: 10px 12px; font-size: .80rem; font-weight: 700; color: #fff; }
+        .module-body { padding: 10px 12px; font-size: .79rem; color: var(--gray-700); line-height: 1.5; background: var(--gray-100); }
+        .module-body code { font-family: var(--font-mono); font-size: .75rem; background: var(--gray-200); padding: 1px 4px; border-radius: 3px; }
+
+        /* Data chain */
+        .data-chain { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; overflow-x: auto; padding: 8px 0; }
+        .chain-item { background: var(--gray-100); border: 1px solid var(--gray-300); border-radius: var(--radius-sm); padding: 10px 14px; display: flex; flex-direction: column; gap: 3px; }
+        .chain-source { border-color: var(--blue); background: var(--blue-faint); }
+        .chain-dest  { border-color: #34a853; background: #e6f4ea; }
+        .chain-type  { font-size: .83rem; font-weight: 700; color: var(--gray-900); font-family: var(--font-mono); }
+        .chain-desc  { font-size: .76rem; color: var(--gray-700); }
+        .chain-desc code { font-family: var(--font-mono); font-size: .73rem; background: var(--gray-200); padding: 1px 3px; border-radius: 3px; }
+        .chain-arrow { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+        .chain-arrow span { font-size: .68rem; color: var(--gray-500); white-space: nowrap; }
+      </style>
+    </section>
+    <section class="section" id="quick-start">
+      <div class="section-header">
+        <div class="section-icon" style="background:#34a853">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="5 3 19 12 5 21 5 3"/>
+          </svg>
+        </div>
+        <div>
+          <div class="section-title">Quick Start</div>
+          <div class="section-subtitle">Como instalar e usar em minutos</div>
+        </div>
+      </div>
+
+      <p class="lead">Instale o TDE em menos de 5 minutos. São apenas três passos: instalar dependências, buildar e carregar no Chrome.</p>
+
+      <!-- Prerequisites -->
+      <div class="req-bar mt-lg">
+        <div class="req-tag">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          Node.js 18+
+        </div>
+        <div class="req-tag">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          npm 9+
+        </div>
+        <div class="req-tag">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          Google Chrome 88+
+        </div>
+        <div class="req-tag">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          Git (opcional)
+        </div>
+      </div>
+
+      <!-- Steps -->
+      <div class="qs-steps mt-lg">
+
+        <div class="qs-step">
+          <div class="qs-step-num">1</div>
+          <div class="qs-step-content">
+            <div class="qs-step-title">Obter o projeto</div>
+            <div class="qs-step-desc">Certifique-se de ter os arquivos do projeto na sua máquina e navegue até a pasta raiz.</div>
+            <div class="code-block">
+              <div class="code-bar"><span class="code-dot red"></span><span class="code-dot amber"></span><span class="code-dot green"></span><span class="code-lang">bash</span></div>
+              <pre>cd tab-domain-executor</pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="qs-connector"></div>
+
+        <div class="qs-step">
+          <div class="qs-step-num">2</div>
+          <div class="qs-step-content">
+            <div class="qs-step-title">Instalar dependências e buildar</div>
+            <div class="qs-step-desc">Instala TypeScript, Webpack e todas as dependências, depois gera a pasta <code>dist/</code> pronta para uso.</div>
+            <div class="code-block">
+              <div class="code-bar"><span class="code-dot red"></span><span class="code-dot amber"></span><span class="code-dot green"></span><span class="code-lang">bash</span></div>
+              <pre>npm install
+npm run build</pre>
+            </div>
+            <div class="tip-box mt-sm">
+              <strong>💡 Desenvolvimento?</strong> Use <code>npm run dev</code> para modo watch — a extensão é recompilada automaticamente a cada alteração.
+            </div>
+          </div>
+        </div>
+
+        <div class="qs-connector"></div>
+
+        <div class="qs-step">
+          <div class="qs-step-num">3</div>
+          <div class="qs-step-content">
+            <div class="qs-step-title">Carregar no Chrome</div>
+            <div class="qs-step-desc">Abra o gerenciador de extensões e aponte para a pasta <code>dist/</code> gerada no passo anterior.</div>
+            <div class="chrome-steps mt-sm">
+              <div class="chrome-step">
+                <span class="cs-num">a</span>
+                <span>Acesse <code>chrome://extensions</code> na barra de endereços</span>
+              </div>
+              <div class="chrome-step">
+                <span class="cs-num">b</span>
+                <span>Ative o toggle <strong>"Modo do desenvolvedor"</strong> (canto superior direito)</span>
+              </div>
+              <div class="chrome-step">
+                <span class="cs-num">c</span>
+                <span>Clique em <strong>"Carregar sem compactação"</strong> e selecione a pasta <code>dist/</code></span>
+              </div>
+              <div class="chrome-step">
+                <span class="cs-num">d</span>
+                <span>Fixe a extensão na barra clicando em 🧩 → alfinete ao lado de "Tab Domain Executor"</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Output structure -->
+      <div class="card mt-lg">
+        <div class="card-label">Estrutura gerada em dist/</div>
+        <div class="file-tree mt-sm">
+          <div class="ft-item ft-dir">📁 dist/</div>
+          <div class="ft-item ft-l2">📄 background.js</div>
+          <div class="ft-item ft-l2">📄 popup.js</div>
+          <div class="ft-item ft-l2">📄 popup.html</div>
+          <div class="ft-item ft-l2">📄 manifest.json</div>
+          <div class="ft-item ft-l2 ft-dir">📁 styles/</div>
+          <div class="ft-item ft-l3">📄 main.css</div>
+          <div class="ft-item ft-l2 ft-dir">📁 assets/icons/</div>
+          <div class="ft-item ft-l3">🖼️ icon16.png · icon32.png · icon48.png · icon128.png</div>
+        </div>
+      </div>
+
+      <style>
+        .req-bar { display: flex; gap: 8px; flex-wrap: wrap; }
+        .req-tag { display: flex; align-items: center; gap: 5px; font-size: .80rem; color: var(--blue); background: var(--blue-faint); border: 1px solid #c5d9fd; border-radius: 20px; padding: 4px 12px; font-weight: 600; }
+
+        /* Steps */
+        .qs-steps { display: flex; flex-direction: column; }
+        .qs-step { display: flex; gap: 16px; }
+        .qs-step-num { width: 36px; height: 36px; border-radius: 50%; background: var(--blue); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1rem; flex-shrink: 0; margin-top: 2px; }
+        .qs-connector { width: 2px; background: var(--gray-200); height: 16px; margin-left: 17px; }
+        .qs-step-content { flex: 1; padding-bottom: 4px; }
+        .qs-step-title { font-size: .97rem; font-weight: 700; color: var(--gray-900); margin-bottom: 4px; }
+        .qs-step-desc { font-size: .87rem; color: var(--gray-700); margin-bottom: 10px; line-height: 1.5; }
+        .qs-step-desc code { font-family: var(--font-mono); font-size: .82rem; background: var(--gray-200); padding: 1px 5px; border-radius: 4px; }
+
+        /* Code block */
+        .code-block { background: #1e1e2e; border-radius: var(--radius-sm); overflow: hidden; }
+        .code-bar { display: flex; align-items: center; gap: 5px; padding: 7px 14px; background: rgba(255,255,255,.05); }
+        .code-dot { width: 10px; height: 10px; border-radius: 50%; }
+        .code-dot.red { background: #f38ba8; }
+        .code-dot.amber { background: #fab387; }
+        .code-dot.green { background: #a6e3a1; }
+        .code-lang { margin-left: auto; font-size: .68rem; color: rgba(255,255,255,.35); text-transform: uppercase; font-family: var(--font-mono); }
+        .code-block pre { padding: 14px 16px; font-family: var(--font-mono); font-size: .83rem; color: #cdd6f4; line-height: 1.7; margin: 0; white-space: pre-wrap; }
+
+        /* Tip box */
+        .tip-box { background: #fffbeb; border: 1px solid #fde68a; border-radius: var(--radius-sm); padding: 10px 14px; font-size: .83rem; color: #92400e; line-height: 1.6; }
+        .tip-box code { font-family: var(--font-mono); font-size: .79rem; background: rgba(0,0,0,.06); padding: 1px 5px; border-radius: 3px; }
+        .tip-box strong { color: #78350f; }
+
+        /* Chrome sub-steps */
+        .chrome-steps { display: flex; flex-direction: column; gap: 8px; }
+        .chrome-step { display: flex; gap: 10px; align-items: flex-start; font-size: .84rem; color: var(--gray-700); line-height: 1.5; }
+        .cs-num { background: var(--gray-200); color: var(--gray-700); width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: .72rem; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+        .chrome-step code { font-family: var(--font-mono); font-size: .79rem; background: var(--gray-200); padding: 1px 5px; border-radius: 3px; }
+
+        /* File tree */
+        .file-tree { font-family: var(--font-mono); font-size: .82rem; }
+        .ft-item { padding: 3px 0; color: var(--gray-700); }
+        .ft-dir { color: var(--gray-900); font-weight: 600; }
+        .ft-l2 { padding-left: 20px; }
+        .ft-l3 { padding-left: 40px; }
+      </style>
+    </section>
+    <section class="section" id="funcionalidades">
+      <div class="section-header">
+        <div class="section-icon" style="background:#7c3aed">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+          </svg>
+        </div>
+        <div>
+          <div class="section-title">Funcionalidades</div>
+          <div class="section-subtitle">Tudo que o TDE é capaz de fazer</div>
+        </div>
+      </div>
+
+      <p class="lead">O TDE é uma ferramenta focada. Cada funcionalidade foi desenhada para aumentar o controle do usuário sem adicionar complexidade desnecessária.</p>
+
+      <!-- Feature groups -->
+      <div class="feat-grid mt-lg">
+
+        <div class="feat-group">
+          <div class="feat-group-header" style="border-color:var(--blue); color:var(--blue)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            Análise de Abas
+          </div>
+          <ul class="feat-list">
+            <li>Lê <strong>todas as abas abertas</strong> em todas as janelas via <code>getAllTabs()</code> → <code>chrome.tabs.query({})</code></li>
+            <li>Normaliza URLs via <code>normalizeUrl()</code> extraindo o <strong>domínio base</strong> (ex: <code>youtube.com</code>)</li>
+            <li>Agrupa abas por domínio via <code>groupByDomain()</code> e por janela via <code>groupByWindow()</code></li>
+            <li>Exibe quantidade de abas e janelas por domínio</li>
+            <li>Busca por nome de domínio na lista</li>
+            <li>Ordenação: mais abas, menos abas, A→Z, Z→A, mais recente, mais antigo</li>
+          </ul>
+        </div>
+
+        <div class="feat-group">
+          <div class="feat-group-header" style="border-color:#7c3aed; color:#7c3aed">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            Seleção de Escopo
+          </div>
+          <ul class="feat-list">
+            <li>Escolha entre <strong>"Todas as janelas"</strong> ou <strong>"Escolher janelas"</strong></li>
+            <li>Cards de janelas com contagem de abas por janela</li>
+            <li>Seleção múltipla de janelas por checkbox</li>
+            <li>Botão "Continuar" exibe o total de abas que serão afetadas</li>
+            <li>Navegação de volta sem perda de contexto</li>
+          </ul>
+        </div>
+
+        <div class="feat-group">
+          <div class="feat-group-header" style="border-color:var(--red); color:var(--red)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            Fechamento de Abas
+          </div>
+          <ul class="feat-list">
+            <li>Lista todas as abas do escopo definido com título, URL e favicon</li>
+            <li><strong>Fechamento individual</strong> por aba via <code>closeSingleTab()</code> → <code>chrome.tabs.remove(tabId)</code></li>
+            <li><strong>Fechamento em lote</strong> de todas as abas do escopo via <code>closeBulkTabs()</code> → <code>chrome.tabs.remove([...ids])</code></li>
+            <li>Fechamento em lote armazena log via <code>storeRecoveryLog()</code>, válido por 15 min</li>
+            <li>Feedback visual claro após a execução</li>
+          </ul>
+        </div>
+
+        <div class="feat-group">
+          <div class="feat-group-header" style="border-color:#34a853; color:#34a853">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.57"/></svg>
+            Recuperação de Ações
+          </div>
+          <ul class="feat-list">
+            <li>Log <code>RecoveryLog</code> em memória da última ação em lote, TTL via <code>RECOVERY_TTL_MS</code> (<strong>15 minutos</strong>)</li>
+            <li>Exibe botão "Recuperar" na tela inicial com tempo restante via <code>hasRecoverableAction()</code></li>
+            <li>Recria as abas nas janelas originais via <code>restoreTabs()</code> → <code>chrome.tabs.create()</code></li>
+            <li>Log apagado via <code>clearRecoveryLog()</code> após recuperação ou expiração do <code>setTimeout</code></li>
+            <li><em>Não</em> disponível para fechamentos individuais (<code>closeSingleTab</code> não chama <code>storeRecoveryLog</code>)</li>
+          </ul>
+        </div>
+
+      </div>
+
+      <!-- Out of scope -->
+      <div class="card mt-lg">
+        <div class="card-label" style="color:var(--red)">Fora do Escopo — Intencionalmente</div>
+        <p class="sub" style="margin-bottom:12px">O TDE é deliberadamente simples. As seguintes funcionalidades foram excluídas por design:</p>
+        <div class="oos-grid">
+          <div class="oos-item">🤖 Gerenciamento automático de abas</div>
+          <div class="oos-item">📊 Análise ou histórico de navegação</div>
+          <div class="oos-item">💾 Persistência de dados entre sessões</div>
+          <div class="oos-item">🔔 Notificações ou background monitoring</div>
+          <div class="oos-item">⚙️ Configurações ou preferências de usuário</div>
+          <div class="oos-item">↩️ Desfazer fechamentos individuais</div>
+        </div>
+      </div>
+
+      <style>
+        .feat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .feat-group { background: var(--white); border: 1px solid var(--gray-300); border-radius: var(--radius-md); overflow: hidden; }
+        .feat-group-header { display: flex; align-items: center; gap: 8px; padding: 12px 16px; font-size: .82rem; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; border-bottom: 2px solid; }
+        .feat-list { list-style: none; padding: 14px 16px; display: flex; flex-direction: column; gap: 9px; }
+        .feat-list li { font-size: .85rem; color: var(--gray-700); line-height: 1.5; padding-left: 16px; position: relative; }
+        .feat-list li::before { content: "✓"; position: absolute; left: 0; color: #34a853; font-weight: 700; font-size: .8rem; }
+        .feat-list code { font-family: var(--font-mono); font-size: .79rem; background: var(--gray-200); padding: 1px 4px; border-radius: 3px; color: var(--gray-900); }
+
+        .oos-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+        .oos-item { background: var(--red-faint); border: 1px solid #fbb; border-radius: var(--radius-sm); padding: 10px 12px; font-size: .82rem; color: #b71c1c; }
+      </style>
+    </section>
+    <section class="section" id="req-funcionais">
+      <div class="section-header">
+        <div class="section-icon" style="background:#e53935">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+          </svg>
+        </div>
+        <div>
+          <div class="section-title">Requisitos Funcionais</div>
+          <div class="section-subtitle">O que o sistema deve fazer</div>
+        </div>
+      </div>
+
+      <p class="lead">Os requisitos funcionais definem o comportamento esperado do sistema. Estão organizados em 4 grupos alinhados ao fluxo de uso.</p>
+
+      <div class="req-section mt-lg">
+        <div class="req-section-title blue">RF-01 a RF-06 — Análise de Abas</div>
+        <table class="req-table">
+          <thead><tr><th>ID</th><th>Descrição</th><th>Prioridade</th></tr></thead>
+          <tbody>
+            <tr><td>RF-01</td><td>O sistema deve ler todas as abas abertas em todas as janelas via <code>chrome.tabs.query({})</code> somente quando solicitado pelo usuário.</td><td><span class="badge high">Alta</span></td></tr>
+            <tr><td>RF-02</td><td>O sistema deve normalizar a URL de cada aba via <code>normalizeUrl()</code> (<code>url-normalizer.ts</code>) extraindo o domínio base (ex: <code>youtube.com</code>), retornando <code>null</code> para URLs inválidas.</td><td><span class="badge high">Alta</span></td></tr>
+            <tr><td>RF-03</td><td>O sistema deve agrupar as abas por domínio via <code>groupByDomain()</code>, retornando <code>DomainGroup[]</code> com <code>tabCount</code>, <code>windowCount</code> e <code>windowIds</code>. Os campos <code>minTabId</code> e <code>maxTabId</code> são calculados no dispatcher a partir dos IDs das abas para suportar ordenação por recência (RF-05).</td><td><span class="badge high">Alta</span></td></tr>
+            <tr><td>RF-04</td><td>O sistema deve exibir os domínios como cards ordenáveis com busca por texto.</td><td><span class="badge high">Alta</span></td></tr>
+            <tr><td>RF-05</td><td>O sistema deve suportar ordenação por: mais abas, menos abas, A→Z, Z→A, mais recente, mais antigo.</td><td><span class="badge med">Média</span></td></tr>
+            <tr><td>RF-06</td><td>O sistema deve ignorar abas sem domínio válido. URLs com prefixo <code>chrome://</code>, <code>about:</code> ou <code>chrome-extension://</code> retornam <code>null</code> do normalizador e são excluídas do agrupamento.</td><td><span class="badge high">Alta</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="req-section mt-md">
+        <div class="req-section-title purple">RF-07 a RF-10 — Seleção de Escopo</div>
+        <table class="req-table">
+          <thead><tr><th>ID</th><th>Descrição</th><th>Prioridade</th></tr></thead>
+          <tbody>
+            <tr><td>RF-07</td><td>Após selecionar um domínio, o sistema deve oferecer duas opções: "Todas as janelas" ou "Escolher janelas".</td><td><span class="badge high">Alta</span></td></tr>
+            <tr><td>RF-08</td><td>Se "Todas as janelas" (<code>TabScope = 'all'</code>), o sistema deve avançar diretamente para a listagem via <code>filterTabsByScope(tabs, domain, 'all')</code> sem etapa adicional.</td><td><span class="badge high">Alta</span></td></tr>
+            <tr><td>RF-09</td><td>Se "Escolher janelas" (<code>TabScope = 'windows'</code>), o sistema deve exibir cards gerados por <code>groupByWindow()</code> retornando <code>WindowGroup[]</code>, com seleção múltipla por checkbox (campo <code>selected</code>).</td><td><span class="badge high">Alta</span></td></tr>
+            <tr><td>RF-10</td><td>O botão "Continuar" deve exibir o total de abas que serão afetadas e estar desabilitado se nenhuma janela for selecionada.</td><td><span class="badge high">Alta</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="req-section mt-md">
+        <div class="req-section-title red">RF-11 a RF-14 — Fechamento de Abas</div>
+        <table class="req-table">
+          <thead><tr><th>ID</th><th>Descrição</th><th>Prioridade</th></tr></thead>
+          <tbody>
+            <tr><td>RF-11</td><td>O sistema deve listar as abas do escopo definido com título, URL completa e favicon.</td><td><span class="badge high">Alta</span></td></tr>
+            <tr><td>RF-12</td><td>O sistema deve permitir fechar uma aba individualmente via <code>closeSingleTab(tabId)</code> → <code>chrome.tabs.remove(tabId)</code>. Esta ação não chama <code>storeRecoveryLog</code> e é irreversível.</td><td><span class="badge high">Alta</span></td></tr>
+            <tr><td>RF-13</td><td>O sistema deve fechar todas as abas do escopo em lote via <code>closeBulkTabs(tabIds)</code> → <code>chrome.tabs.remove([...ids])</code>, seguido de <code>storeRecoveryLog(tabs)</code> em memória.</td><td><span class="badge high">Alta</span></td></tr>
+            <tr><td>RF-14</td><td>Após o fechamento, o sistema deve exibir feedback visual confirmando a ação e informando a disponibilidade de recuperação.</td><td><span class="badge high">Alta</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="req-section mt-md">
+        <div class="req-section-title green">RF-15 a RF-18 — Recuperação</div>
+        <table class="req-table">
+          <thead><tr><th>ID</th><th>Descrição</th><th>Prioridade</th></tr></thead>
+          <tbody>
+            <tr><td>RF-15</td><td>O sistema deve armazenar em memória um <code>RecoveryLog</code> com <code>tabs: TabMinimal[]</code> (url + windowId), <code>timestamp</code> e <code>ttl</code> das abas fechadas em lote.</td><td><span class="badge high">Alta</span></td></tr>
+            <tr><td>RF-16</td><td>O log de recuperação deve expirar automaticamente após <code>RECOVERY_TTL_MS</code> (15 × 60 × 1000 ms) via <code>setTimeout</code> em <code>recovery-manager.ts</code>.</td><td><span class="badge high">Alta</span></td></tr>
+            <tr><td>RF-17</td><td>Na tela inicial, se houver log válido, deve ser exibido botão "Recuperar" com tempo restante.</td><td><span class="badge high">Alta</span></td></tr>
+            <tr><td>RF-18</td><td>Ao recuperar, o sistema deve recriar todas as abas via <code>restoreTabs(tabs)</code> → <code>chrome.tabs.create()</code> nas janelas originais e apagar o log via <code>clearRecoveryLog()</code> imediatamente.</td><td><span class="badge high">Alta</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <style>
+        .req-section-title { font-size: .80rem; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; padding: 0 0 8px; border-bottom: 2px solid; margin-bottom: 0; }
+        .req-section-title.blue   { color: var(--blue);   border-color: var(--blue); }
+        .req-section-title.purple { color: #7c3aed;       border-color: #7c3aed; }
+        .req-section-title.red    { color: var(--red);    border-color: var(--red); }
+        .req-section-title.green  { color: #34a853;       border-color: #34a853; }
+        .req-table { width: 100%; border-collapse: collapse; font-size: .84rem; margin-top: 0; background: var(--white); border: 1px solid var(--gray-300); border-top: none; }
+        .req-table thead { background: var(--gray-100); }
+        .req-table th { padding: 9px 14px; text-align: left; font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: var(--gray-700); border-bottom: 1px solid var(--gray-300); }
+        .req-table td { padding: 10px 14px; border-bottom: 1px solid var(--gray-200); color: var(--gray-700); line-height: 1.5; vertical-align: top; }
+        .req-table tr:last-child td { border-bottom: none; }
+        .req-table td:first-child { font-family: var(--font-mono); font-size: .78rem; color: var(--gray-900); font-weight: 700; white-space: nowrap; width: 60px; }
+        .req-table td:last-child { width: 80px; }
+        .req-table code { font-family: var(--font-mono); font-size: .78rem; background: var(--gray-200); padding: 1px 4px; border-radius: 3px; }
+        .badge { display: inline-block; font-size: .71rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; text-transform: uppercase; letter-spacing: .4px; }
+        .badge.high { background: #e8f5e9; color: #2e7d32; }
+        .badge.med  { background: #fff8e1; color: #f57f17; }
+        .badge.low  { background: var(--gray-200); color: var(--gray-700); }
+      </style>
+    </section>
+
+    <!-- ══ 6. REQUISITOS NÃO FUNCIONAIS ══════════════════════════════ -->
+    <section class="section" id="req-nao-funcionais">
+      <div class="section-header">
+        <div class="section-icon" style="background:#f59e0b">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/>
+          </svg>
+        </div>
+        <div>
+          <div class="section-title">Requisitos Não Funcionais</div>
+          <div class="section-subtitle">Restrições de qualidade e desempenho</div>
+        </div>
+      </div>
+
+      <p class="lead">Os requisitos não funcionais definem as <strong>restrições de qualidade</strong> que o sistema deve atender independentemente do comportamento funcional.</p>
+
+      <div class="rnf-grid mt-lg">
+
+        <div class="rnf-card">
+          <div class="rnf-header" style="background:var(--blue)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Desempenho
+          </div>
+          <ul class="rnf-list">
+            <li><span class="rnf-id">RNF-01</span> A análise de abas deve completar em menos de <strong>2 segundos</strong> para até 200 abas abertas.</li>
+            <li><span class="rnf-id">RNF-02</span> A resposta a ações do usuário (cliques, digitação) não deve apresentar latência perceptível (&lt; 100ms).</li>
+            <li><span class="rnf-id">RNF-03</span> O fechamento em lote não deve bloquear a UI durante a execução.</li>
+          </ul>
+        </div>
+
+        <div class="rnf-card">
+          <div class="rnf-header" style="background:var(--red)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Segurança
+          </div>
+          <ul class="rnf-list">
+            <li><span class="rnf-id">RNF-04</span> Nenhum dado de navegação deve ser transmitido para servidores externos.</li>
+            <li><span class="rnf-id">RNF-05</span> O log de recuperação deve existir exclusivamente em memória — variável <code>let recoveryLog: RecoveryLog | null</code> em <code>recovery-manager.ts</code> (sem <code>localStorage</code> ou <code>chrome.storage</code>).</li>
+            <li><span class="rnf-id">RNF-06</span> A extensão deve operar com as permissões mínimas necessárias: <code>"permissions": ["tabs"]</code> em <code>manifest.json</code>.</li>
+          </ul>
+        </div>
+
+        <div class="rnf-card">
+          <div class="rnf-header" style="background:#7c3aed">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+            Usabilidade
+          </div>
+          <ul class="rnf-list">
+            <li><span class="rnf-id">RNF-07</span> O fluxo completo (análise → fechamento) deve ser executável em menos de <strong>5 interações</strong>.</li>
+            <li><span class="rnf-id">RNF-08</span> O usuário deve conseguir entender o estado atual da interface sem nenhuma instrução prévia.</li>
+            <li><span class="rnf-id">RNF-09</span> O popup deve ter largura fixa de <strong>400px</strong> — definida por <code>width: 400px</code> em <code>main.css</code>.</li>
+          </ul>
+        </div>
+
+        <div class="rnf-card">
+          <div class="rnf-header" style="background:#34a853">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            Manutenibilidade
+          </div>
+          <ul class="rnf-list">
+            <li><span class="rnf-id">RNF-10</span> Cada módulo deve ter responsabilidade única e ser testável de forma isolada. A suíte de testes deve cobrir todos os módulos de negócio individualmente (unit) e o fluxo de mensagens completo (integration).</li>
+            <li><span class="rnf-id">RNF-11</span> Todo o código deve ser escrito em TypeScript com tipagem estrita — <code>"strict": true</code> configurado em <code>tsconfig.json</code>.</li>
+            <li><span class="rnf-id">RNF-12</span> A UI não deve chamar a Chrome API diretamente — toda comunicação passa pelo background via <code>chrome.runtime.sendMessage</code>.</li>
+            <li><span class="rnf-id">RNF-19</span> A cobertura de testes deve respeitar os thresholds mínimos configurados em <code>jest.config.js</code>: <strong>80% linhas</strong>, <strong>80% statements</strong>, <strong>75% funções</strong> e <strong>70% branches</strong>.</li>
+          </ul>
+        </div>
+
+        <div class="rnf-card">
+          <div class="rnf-header" style="background:#f59e0b">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+            Compatibilidade
+          </div>
+          <ul class="rnf-list">
+            <li><span class="rnf-id">RNF-13</span> A extensão deve seguir a especificação <strong>Manifest V3</strong> do Chrome.</li>
+            <li><span class="rnf-id">RNF-14</span> Deve ser compatível com Google Chrome versão <strong>88 ou superior</strong>.</li>
+            <li><span class="rnf-id">RNF-15</span> Sem dependências externas de runtime — apenas APIs nativas do Chrome e do navegador.</li>
+          </ul>
+        </div>
+
+        <div class="rnf-card">
+          <div class="rnf-header" style="background:#0097a7">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            Confiabilidade
+          </div>
+          <ul class="rnf-list">
+            <li><span class="rnf-id">RNF-16</span> Erros em qualquer módulo devem ser capturados e retornados como <code>ActionResult.success = false</code> (tipo <code>ActionResult</code> em <code>common.types.ts</code>), sem propagar exceções para a UI.</li>
+            <li><span class="rnf-id">RNF-17</span> O log de recuperação deve expirar graciosamente após 15 minutos sem intervenção do usuário.</li>
+            <li><span class="rnf-id">RNF-18</span> A ausência de favicon não deve impedir a renderização de uma aba na lista.</li>
+          </ul>
+        </div>
+
+      </div>
+
+      <style>
+        .rnf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .rnf-card { background: var(--white); border: 1px solid var(--gray-300); border-radius: var(--radius-md); overflow: hidden; }
+        .rnf-header { display: flex; align-items: center; gap: 8px; padding: 12px 16px; font-size: .83rem; font-weight: 700; color: #fff; }
+        .rnf-list { list-style: none; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; }
+        .rnf-list li { font-size: .84rem; color: var(--gray-700); line-height: 1.55; padding-left: 52px; position: relative; }
+        .rnf-id { position: absolute; left: 0; font-family: var(--font-mono); font-size: .74rem; font-weight: 700; color: var(--gray-900); background: var(--gray-200); padding: 1px 6px; border-radius: 4px; white-space: nowrap; }
+        .rnf-list code { font-family: var(--font-mono); font-size: .78rem; background: var(--gray-200); padding: 1px 4px; border-radius: 3px; }
+      </style>
+    </section>
+
+    <!-- ══ 7. CASOS DE USO ════════════════════════════════════════════ -->
+    <section class="section" id="casos-de-uso">
+      <div class="section-header">
+        <div class="section-icon" style="background:#0097a7">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+        </div>
+        <div>
+          <div class="section-title">Casos de Uso</div>
+          <div class="section-subtitle">Cenários de interação entre usuários e o sistema</div>
+        </div>
+      </div>
+
+      <p class="lead">Os casos de uso descrevem as interações entre o <strong>Usuário</strong> (único ator do sistema) e o TDE. Há 4 casos de uso principais.</p>
+
+      <!-- Actor -->
+      <div class="actor-box mt-lg">
+        <div class="actor-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
+        <div class="actor-info">
+          <strong>Ator: Usuário</strong>
+          <span>Pessoa que opera a extensão diretamente. Sem perfis ou níveis de permissão — o sistema tem um único tipo de usuário.</span>
+        </div>
+      </div>
+
+      <!-- Use cases -->
+      <div class="uc-list mt-lg">
+
+        <div class="uc-card">
+          <div class="uc-header" style="background:var(--blue)">
+            <span class="uc-id">UC-01</span>
+            <span class="uc-name">Fechar abas de um domínio em todas as janelas</span>
+          </div>
+          <div class="uc-body">
+            <div class="uc-row"><span class="uc-label">Pré-condição</span><span>O Chrome possui ao menos 2 abas de um mesmo domínio abertas em qualquer janela.</span></div>
+            <div class="uc-row"><span class="uc-label">Ator</span><span>Usuário</span></div>
+            <div class="uc-flow">
+              <div class="uc-flow-label">Fluxo Principal</div>
+              <ol class="uc-steps">
+                <li>Usuário clica em "Analisar Abas".</li>
+                <li>Sistema exibe a lista de domínios agrupados.</li>
+                <li>Usuário seleciona o domínio desejado.</li>
+                <li>Sistema exibe opções de escopo.</li>
+                <li>Usuário escolhe <strong>"Todas as janelas"</strong>.</li>
+                <li>Sistema lista todas as abas do domínio.</li>
+                <li>Usuário clica em <strong>"Fechar todas as abas"</strong>.</li>
+                <li>Sistema fecha as abas e exibe confirmação com opção de recuperação.</li>
+              </ol>
+            </div>
+            <div class="uc-row"><span class="uc-label">Pós-condição</span><span>As abas do domínio são fechadas em todas as janelas. Log de recuperação criado por 15 min.</span></div>
+          </div>
+        </div>
+
+        <div class="uc-card">
+          <div class="uc-header" style="background:#7c3aed">
+            <span class="uc-id">UC-02</span>
+            <span class="uc-name">Fechar abas de um domínio em janelas específicas</span>
+          </div>
+          <div class="uc-body">
+            <div class="uc-row"><span class="uc-label">Pré-condição</span><span>O domínio possui abas em ao menos 2 janelas diferentes.</span></div>
+            <div class="uc-row"><span class="uc-label">Ator</span><span>Usuário</span></div>
+            <div class="uc-flow">
+              <div class="uc-flow-label">Fluxo Principal</div>
+              <ol class="uc-steps">
+                <li>Usuário seleciona o domínio e escolhe <strong>"Escolher janelas"</strong>.</li>
+                <li>Sistema exibe cards de janelas com a contagem de abas de cada uma.</li>
+                <li>Usuário marca as janelas desejadas via checkbox.</li>
+                <li>Botão "Continuar" exibe o total de abas que serão afetadas.</li>
+                <li>Usuário clica em "Continuar".</li>
+                <li>Sistema lista as abas das janelas selecionadas.</li>
+                <li>Usuário clica em <strong>"Fechar todas as abas"</strong>.</li>
+                <li>Sistema fecha apenas as abas das janelas escolhidas.</li>
+              </ol>
+            </div>
+            <div class="uc-flow alt">
+              <div class="uc-flow-label alt">Fluxo Alternativo — Nenhuma janela selecionada</div>
+              <ol class="uc-steps">
+                <li>Usuário não marca nenhuma janela.</li>
+                <li>Botão "Continuar" permanece desativado.</li>
+                <li>Usuário deve selecionar ao menos uma janela para prosseguir.</li>
+              </ol>
+            </div>
+            <div class="uc-row"><span class="uc-label">Pós-condição</span><span>Apenas as abas das janelas selecionadas são fechadas. Abas de outras janelas permanecem intactas.</span></div>
+          </div>
+        </div>
+
+        <div class="uc-card">
+          <div class="uc-header" style="background:var(--red)">
+            <span class="uc-id">UC-03</span>
+            <span class="uc-name">Fechar uma aba individualmente</span>
+          </div>
+          <div class="uc-body">
+            <div class="uc-row"><span class="uc-label">Pré-condição</span><span>O usuário está na lista de abas (após selecionar domínio e escopo).</span></div>
+            <div class="uc-row"><span class="uc-label">Ator</span><span>Usuário</span></div>
+            <div class="uc-flow">
+              <div class="uc-flow-label">Fluxo Principal</div>
+              <ol class="uc-steps">
+                <li>Usuário localiza a aba desejada na lista.</li>
+                <li>Usuário clica no botão <strong>×</strong> ao lado da aba.</li>
+                <li>Sistema remove a aba imediatamente da lista e fecha no Chrome.</li>
+              </ol>
+            </div>
+            <div class="uc-row warning"><span class="uc-label">Atenção</span><span>Fechamento individual <strong>não gera</strong> log de recuperação. A ação é irreversível.</span></div>
+          </div>
+        </div>
+
+        <div class="uc-card">
+          <div class="uc-header" style="background:#34a853">
+            <span class="uc-id">UC-04</span>
+            <span class="uc-name">Recuperar a última ação em lote</span>
+          </div>
+          <div class="uc-body">
+            <div class="uc-row"><span class="uc-label">Pré-condição</span><span>Um fechamento em lote foi realizado há menos de 15 minutos.</span></div>
+            <div class="uc-row"><span class="uc-label">Ator</span><span>Usuário</span></div>
+            <div class="uc-flow">
+              <div class="uc-flow-label">Fluxo Principal</div>
+              <ol class="uc-steps">
+                <li>Usuário abre a extensão. A tela inicial exibe o botão "Recuperar" com tempo restante.</li>
+                <li>Usuário clica em <strong>"Recuperar"</strong>.</li>
+                <li>Sistema recria todas as abas fechadas nas janelas originais.</li>
+                <li>Log de recuperação é apagado imediatamente.</li>
+                <li>Sistema exibe confirmação do número de abas restauradas.</li>
+              </ol>
+            </div>
+            <div class="uc-flow alt">
+              <div class="uc-flow-label alt">Fluxo Alternativo — TTL expirado</div>
+              <ol class="uc-steps">
+                <li>15 minutos se passaram desde o fechamento.</li>
+                <li>O botão "Recuperar" não é exibido na tela inicial.</li>
+                <li>A recuperação não está mais disponível.</li>
+              </ol>
+            </div>
+            <div class="uc-row"><span class="uc-label">Pós-condição</span><span>As abas são restauradas nas janelas originais. Log apagado. Botão "Recuperar" desaparece da interface.</span></div>
+          </div>
+        </div>
+
+      </div>
+
+      <style>
+        .actor-box { display: flex; gap: 14px; align-items: center; background: var(--blue-faint); border: 1px solid #c5d9fd; border-radius: var(--radius-md); padding: 16px 20px; }
+        .actor-icon { width: 44px; height: 44px; background: var(--blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .actor-info { display: flex; flex-direction: column; gap: 4px; }
+        .actor-info strong { font-size: .92rem; color: var(--gray-900); }
+        .actor-info span { font-size: .84rem; color: var(--gray-700); line-height: 1.5; }
+
+        .uc-list { display: flex; flex-direction: column; gap: 14px; }
+        .uc-card { border: 1px solid var(--gray-300); border-radius: var(--radius-md); overflow: hidden; background: var(--white); }
+        .uc-header { display: flex; align-items: center; gap: 12px; padding: 12px 18px; color: #fff; }
+        .uc-id { font-family: var(--font-mono); font-size: .8rem; font-weight: 700; background: rgba(255,255,255,.2); padding: 2px 8px; border-radius: 4px; flex-shrink: 0; }
+        .uc-name { font-size: .9rem; font-weight: 700; }
+        .uc-body { padding: 18px; display: flex; flex-direction: column; gap: 10px; }
+        .uc-row { display: flex; gap: 12px; font-size: .85rem; line-height: 1.55; }
+        .uc-row.warning { background: var(--red-faint); border: 1px solid #fbb; border-radius: var(--radius-sm); padding: 10px 12px; margin: 0 -4px; }
+        .uc-label { font-weight: 700; color: var(--gray-900); flex-shrink: 0; min-width: 90px; }
+        .uc-flow { background: var(--gray-100); border-radius: var(--radius-sm); padding: 12px 16px; }
+        .uc-flow.alt { background: #fff8e1; border: 1px solid #fde68a; }
+        .uc-flow-label { font-size: .73rem; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: var(--gray-700); margin-bottom: 8px; }
+        .uc-flow-label.alt { color: #92400e; }
+        .uc-steps { padding-left: 18px; display: flex; flex-direction: column; gap: 5px; }
+        .uc-steps li { font-size: .84rem; color: var(--gray-700); line-height: 1.5; }
+      </style>
+    </section>
+    <section class="section" id="diagramas">
+      <div class="section-header">
+        <div class="section-icon" style="background:#7c3aed">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>
+          </svg>
+        </div>
+        <div>
+          <div class="section-title">Diagramas de Casos de Uso</div>
+          <div class="section-subtitle">Representação visual dos fluxos de interação</div>
+        </div>
+      </div>
+
+      <p class="lead">Diagramas visuais dos casos de uso e do fluxo de estados da interface.</p>
+
+      <!-- Use Case Diagram -->
+      <div class="card mt-lg">
+        <div class="card-label">Diagrama de Casos de Uso — UML</div>
+        <p class="sub" style="margin-bottom:18px">Relacionamento entre o único ator (Usuário) e os 4 casos de uso do sistema.</p>
+        <div class="diagram-wrap">
+          <svg viewBox="0 0 660 410" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:660px;display:block;margin:auto;">
+            <!-- System boundary -->
+            <rect x="145" y="25" width="490" height="370" rx="10" fill="#f8f9fa" stroke="#dadce0" stroke-width="2" stroke-dasharray="6,4"/>
+            <text x="390" y="50" text-anchor="middle" font-family="-apple-system,sans-serif" font-size="13" font-weight="700" fill="#5f6368">« system »</text>
+            <text x="390" y="67" text-anchor="middle" font-family="-apple-system,sans-serif" font-size="14" font-weight="700" fill="#202124">Tab Domain Executor</text>
+
+            <!-- Actor: stick figure -->
+            <!-- head -->
+            <circle cx="52" cy="130" r="16" fill="none" stroke="#4285f4" stroke-width="2.5"/>
+            <!-- body -->
+            <line x1="52" y1="146" x2="52" y2="200" stroke="#4285f4" stroke-width="2.5" stroke-linecap="round"/>
+            <!-- arms -->
+            <line x1="30" y1="170" x2="74" y2="170" stroke="#4285f4" stroke-width="2.5" stroke-linecap="round"/>
+            <!-- left leg -->
+            <line x1="52" y1="200" x2="32" y2="228" stroke="#4285f4" stroke-width="2.5" stroke-linecap="round"/>
+            <!-- right leg -->
+            <line x1="52" y1="200" x2="72" y2="228" stroke="#4285f4" stroke-width="2.5" stroke-linecap="round"/>
+            <!-- actor label -->
+            <text x="52" y="248" text-anchor="middle" font-family="-apple-system,sans-serif" font-size="12" font-weight="600" fill="#4285f4">Usuário</text>
+
+            <!-- Connector lines (from actor body center to ellipse) -->
+            <line x1="68" y1="183" x2="243" y2="110" stroke="#9aa0a6" stroke-width="1.5"/>
+            <line x1="68" y1="183" x2="235" y2="193" stroke="#9aa0a6" stroke-width="1.5"/>
+            <line x1="68" y1="183" x2="243" y2="278" stroke="#9aa0a6" stroke-width="1.5"/>
+            <line x1="68" y1="198" x2="240" y2="357" stroke="#9aa0a6" stroke-width="1.5"/>
+
+            <!-- UC-01 ellipse -->
+            <ellipse cx="365" cy="110" rx="118" ry="32" fill="white" stroke="#4285f4" stroke-width="2"/>
+            <text x="365" y="105" text-anchor="middle" font-family="-apple-system,sans-serif" font-size="11.5" font-weight="600" fill="#202124">Fechar abas em todas</text>
+            <text x="365" y="120" text-anchor="middle" font-family="-apple-system,sans-serif" font-size="11.5" font-weight="600" fill="#202124">as janelas (UC-01)</text>
+
+            <!-- UC-02 ellipse -->
+            <ellipse cx="365" cy="195" rx="118" ry="32" fill="white" stroke="#7c3aed" stroke-width="2"/>
+            <text x="365" y="190" text-anchor="middle" font-family="-apple-system,sans-serif" font-size="11.5" font-weight="600" fill="#202124">Fechar abas em janelas</text>
+            <text x="365" y="205" text-anchor="middle" font-family="-apple-system,sans-serif" font-size="11.5" font-weight="600" fill="#202124">específicas (UC-02)</text>
+
+            <!-- UC-03 ellipse -->
+            <ellipse cx="365" cy="278" rx="118" ry="32" fill="white" stroke="#e53935" stroke-width="2"/>
+            <text x="365" y="273" text-anchor="middle" font-family="-apple-system,sans-serif" font-size="11.5" font-weight="600" fill="#202124">Fechar aba individual</text>
+            <text x="365" y="288" text-anchor="middle" font-family="-apple-system,sans-serif" font-size="11.5" font-weight="600" fill="#202124">(UC-03)</text>
+
+            <!-- UC-04 ellipse -->
+            <ellipse cx="365" cy="358" rx="118" ry="32" fill="white" stroke="#34a853" stroke-width="2"/>
+            <text x="365" y="353" text-anchor="middle" font-family="-apple-system,sans-serif" font-size="11.5" font-weight="600" fill="#202124">Recuperar última ação</text>
+            <text x="365" y="368" text-anchor="middle" font-family="-apple-system,sans-serif" font-size="11.5" font-weight="600" fill="#202124">em lote (UC-04)</text>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Navigation State Flow Diagram -->
+      <div class="card mt-md">
+        <div class="card-label">Diagrama de Fluxo de Estados — Interface</div>
+        <p class="sub" style="margin-bottom:18px">Estados da UI e transições possíveis durante a interação do usuário.</p>
+        <div class="diagram-wrap" style="overflow-x:auto;">
+          <svg viewBox="0 0 720 370" xmlns="http://www.w3.org/2000/svg" style="width:100%;min-width:580px;max-width:720px;display:block;margin:auto;">
+            <!-- Row 1: Initial → Domain View -->
+            <!-- STATE: Initial -->
+            <rect x="20" y="60" width="130" height="56" rx="8" fill="white" stroke="#4285f4" stroke-width="2"/>
+            <text x="85" y="84" text-anchor="middle" font-family="-apple-system,sans-serif" font-size="11" font-weight="700" fill="#4285f4">INITIAL</text>
+            <text x="85" y="100" text-anchor="middle" font-family="-apple-system,sans-serif" font-size="10" fill="#5f6368">Tela inicial</text>
+
+            <!-- arrow right -->
+            <line x1="150" y1="88" x2="218" y2="88" stroke="#9aa0a6" stroke-width="1.5" marker-end="url(#arr)"/>
+            <text x="184" y="82" text-anchor="middle" font-family="-apple-system,sans-serif" font-size="9.5" fill="#5f6368">Analisar Abas</text>
+
+            <!-- STATE: Domain View -->
+            <rect x="220" y="60" width="140" height="56" rx="8" fill="white" stroke="#4285f4" stroke-width="2"/>
+            <text x="290" y="83" text-anchor="middle" font-family="-apple-system,sans-serif" font-size="11" font-weight="700" fill="#4285f4">DOMAIN_VIEW</text>
+            <text x="290" y="98" text-anchor="middle" font-family="-apple-system,sans-serif" font-size="10" fill="#5f6368">Lista de domínios</text>
+
+            <!-- arrow right to scope -->
+            <line x1="360" y1="88" x2="428" y2="88" stroke="#9aa0a6" stroke-width="1.5" marker-end="url(#arr)"/>
+            <text x="394" y="82" text-anchor="middle" font-family="-apple-system,sans-serif" font-size="9.5" fill="#5f6368">Selecionar domínio</text>
+
+            <!-- STATE: Scope Selection -->
+            <rect x="430" y="60" width="140" height="56" rx="8" fill="white" stroke="#7c3aed" stroke-width="2"/>
+            <text x="500" y="82" text-anchor="middle" font-family="-apple-system,sans-serif" font-size="11" font-weight="700" fill="#7c3aed">SCOPE_SEL.</text>
+            <text x="500" y="97" text-anchor="middle" font-family="-apple-system,sans-serif" font-size="10" fill="#5f6368">Escopo: janelas</text>
+
+            <!-- From SCOPE to TAB_ACTION_VIEW (all windows path) -->
+            <line x1="570" y1="88" x2="608" y2="88" stroke="#9aa0a6" stroke-width="1.5"/>
+            <line x1="608" y1="88" x2="608" y2="150" stroke="#9aa0a6" stroke-width="1.5" marker-end="url(#arr)"/>
+            <text x="620" y="120" font-family="-apple-system,sans-serif" font-size="9" fill="#5f6368">Todas</text>
+            <text x="620" y="133" font-family="-apple-system,sans-serif" font-size="9" fill="#5f6368">as jan.</text>
+
+            <!-- From SCOPE to WINDOW_SELECTION (choose windows path) -->
+            <line x1="500" y1="116" x2="500" y2="230" stroke="#9aa0a6" stroke-width="1.5" marker-end="url(#arr)"/>
+            <text x="508" y="180" font-family="-apple-system,sans-serif" font-size="9" fill="#5f6368">Escolher</text>
+            <text x="508" y="192" font-family="-apple-system,sans-serif" font-size="9" fill="#5f6368">janelas</text>
+
+            <!-- STATE: Window Selection -->
+            <rect x="420" y="232" width="160" height="56" rx="8" fill="white" stroke="#7c3aed" stroke-width="2"/>
+            <text x="500" y="255" text-anchor="middle" font-family="-apple-system,sans-serif" font-size="11" font-weight="700" fill="#7c3aed">WINDOW_SEL.</text>
+            <text x="500" y="270" text-anchor="middle" font-family="-apple-system,sans-serif" font-size="10" fill="#5f6368">Seleção de janelas</text>
+
+            <!-- From WINDOW_SELECTION to TAB_ACTION_VIEW -->
+            <line x1="500" y1="288" x2="500" y2="310" stroke="#9aa0a6" stroke-width="1.5"/>
+            <line x1="500" y1="310" x2="608" y2="310" stroke="#9aa0a6" stroke-width="1.5"/>
+            <line x1="608" y1="310" x2="608" y2="205" stroke="#9aa0a6" stroke-width="1.5" marker-end="url(#arr)"/>
+            <text x="565" y="323" font-family="-apple-system,sans-serif" font-size="9" fill="#5f6368">Continuar</text>
+
+            <!-- STATE: Tab Action View -->
+            <rect x="548" y="150" width="150" height="56" rx="8" fill="white" stroke="#e53935" stroke-width="2"/>
+            <text x="623" y="172" text-anchor="middle" font-family="-apple-system,sans-serif" font-size="11" font-weight="700" fill="#e53935">TAB_ACTION</text>
+            <text x="623" y="187" text-anchor="middle" font-family="-apple-system,sans-serif" font-size="10" fill="#5f6368">Lista de abas</text>
+
+            <!-- From TAB_ACTION to FEEDBACK (close all) -->
+            <line x1="623" y1="206" x2="623" y2="230" stroke="#9aa0a6" stroke-width="1.5" marker-end="url(#arr)"/>
+            <text x="632" y="222" font-family="-apple-system,sans-serif" font-size="9" fill="#5f6368">Fechar tudo</text>
+
+            <!-- STATE: Feedback -->
+            <rect x="548" y="232" width="150" height="56" rx="8" fill="white" stroke="#34a853" stroke-width="2"/>
+            <text x="623" y="255" text-anchor="middle" font-family="-apple-system,sans-serif" font-size="11" font-weight="700" fill="#34a853">FEEDBACK</text>
+            <text x="623" y="270" text-anchor="middle" font-family="-apple-system,sans-serif" font-size="10" fill="#5f6368">Confirmação</text>
+
+            <!-- Back arrows (back navigation) -->
+            <!-- Domain View back to Initial (back button) -->
+            <path d="M220 100 Q160 130 150 105" fill="none" stroke="#9aa0a6" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#arrg)"/>
+            <text x="165" y="128" font-family="-apple-system,sans-serif" font-size="9" fill="#9aa0a6">← Voltar</text>
+
+            <!-- Scope back to Domain -->
+            <path d="M430 100 Q370 130 360 105" fill="none" stroke="#9aa0a6" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#arrg)"/>
+
+            <!-- Tab Action back to domain -->
+            <path d="M548 165 Q400 50 360 75" fill="none" stroke="#9aa0a6" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#arrg)"/>
+
+            <!-- From Initial, recovery flow -->
+            <line x1="85" y1="116" x2="85" y2="303" stroke="#34a853" stroke-width="1.5" stroke-dasharray="5,3"/>
+            <rect x="20" y="305" width="130" height="50" rx="8" fill="white" stroke="#34a853" stroke-width="2"/>
+            <text x="85" y="327" text-anchor="middle" font-family="-apple-system,sans-serif" font-size="10.5" font-weight="700" fill="#34a853">RECOVERY</text>
+            <text x="85" y="341" text-anchor="middle" font-family="-apple-system,sans-serif" font-size="10" fill="#5f6368">Recuperação</text>
+            <text x="52" y="295" font-family="-apple-system,sans-serif" font-size="9" fill="#34a853">se TTL válido</text>
+
+            <!-- Arrowhead defs -->
+            <defs>
+              <marker id="arr" markerWidth="8" markerHeight="6" refX="6" refY="3" orient="auto">
+                <polygon points="0 0, 8 3, 0 6" fill="#9aa0a6"/>
+              </marker>
+              <marker id="arrg" markerWidth="8" markerHeight="6" refX="6" refY="3" orient="auto">
+                <polygon points="0 0, 8 3, 0 6" fill="#c5c5c5"/>
+              </marker>
+            </defs>
+          </svg>
+        </div>
+        <div class="diagram-legend">
+          <div class="legend-item"><span class="leg-line solid"></span>Transição principal</div>
+          <div class="legend-item"><span class="leg-line dashed"></span>Navegação de retorno</div>
+          <div class="legend-item"><span class="leg-line green-dashed"></span>Fluxo condicional (TTL)</div>
+        </div>
+      </div>
+
+      <style>
+        .diagram-wrap { padding: 8px 0; }
+        .diagram-legend { display: flex; gap: 20px; flex-wrap: wrap; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--gray-200); }
+        .legend-item { display: flex; align-items: center; gap: 6px; font-size: .78rem; color: var(--gray-700); }
+        .leg-line { display: inline-block; width: 30px; height: 2px; }
+        .leg-line.solid { background: #9aa0a6; }
+        .leg-line.dashed { background: repeating-linear-gradient(90deg, #9aa0a6 0 4px, transparent 4px 7px); }
+        .leg-line.green-dashed { background: repeating-linear-gradient(90deg, #34a853 0 4px, transparent 4px 7px); }
+      </style>
+
+      <!-- ── UC Flow Diagrams ─────────────────────────────────────── -->
+      <div class="card-label mt-lg" style="font-size:.80rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--blue);margin-bottom:14px;">Fluxos por Caso de Uso</div>
+
+      <!-- UC-01 -->
+      <div class="uc-flow-card mt-sm">
+        <div class="ucf-tabs">
+          <span class="ucf-pill" style="background:var(--blue);color:#fff">UC-01</span>
+          <span class="ucf-pill" style="background:var(--gray-200);color:var(--gray-700)">Lote</span>
+          <span class="ucf-pill" style="background:var(--gray-200);color:var(--gray-700)">v1.0</span>
+          <span class="ucf-title">UC-01 — Fechar abas em todas as janelas</span>
+        </div>
+        <div class="ucf-steps">
+          <div class="ucf-step">
+            <div class="ucf-num" style="background:var(--blue)">1</div>
+            <div class="ucf-step-title">Analisar Abas</div>
+            <div class="ucf-step-desc">Usuário clica em "Analisar Abas". O sistema lê todas as abas abertas via <code>chrome.tabs.query({})</code>.</div>
+          </div>
+          <div class="ucf-connector"></div>
+          <div class="ucf-step">
+            <div class="ucf-num" style="background:var(--blue)">2</div>
+            <div class="ucf-step-title">Selecionar domínio</div>
+            <div class="ucf-step-desc">Sistema exibe lista de domínios agrupados. Usuário clica no domínio desejado.</div>
+          </div>
+          <div class="ucf-connector"></div>
+          <div class="ucf-step">
+            <div class="ucf-num" style="background:#7c3aed">3</div>
+            <div class="ucf-step-title">Definir escopo</div>
+            <div class="ucf-step-desc">Sistema exibe opções de escopo. Usuário escolhe <strong>"Todas as janelas"</strong>.</div>
+          </div>
+          <div class="ucf-connector"></div>
+          <div class="ucf-step">
+            <div class="ucf-num" style="background:var(--red)">4</div>
+            <div class="ucf-step-title">Fechar em lote</div>
+            <div class="ucf-step-desc">Sistema lista as abas do domínio. Usuário clica em <strong>"Fechar todas as abas"</strong>.</div>
+          </div>
+          <div class="ucf-connector"></div>
+          <div class="ucf-step">
+            <div class="ucf-num" style="background:#34a853">5</div>
+            <div class="ucf-step-title">Feedback + Log</div>
+            <div class="ucf-step-desc">Sistema fecha as abas, exibe confirmação e cria log de recuperação válido por 15 min.</div>
+          </div>
+        </div>
+        <div class="ucf-meta">
+          <div class="ucf-meta-block">
+            <div class="ucf-meta-label">Pré-condições</div>
+            <div class="ucf-meta-desc">Há ao menos 2 abas do mesmo domínio abertas em qualquer janela.</div>
+          </div>
+          <div class="ucf-meta-block">
+            <div class="ucf-meta-label">Pós-condições</div>
+            <div class="ucf-meta-desc">Todas as abas do domínio são fechadas. Log de recuperação criado por 15 min.</div>
+          </div>
+          <div class="ucf-meta-block">
+            <div class="ucf-meta-label">Fluxo alternativo</div>
+            <div class="ucf-meta-desc">Não há abas do domínio selecionado: a lista aparece vazia e o botão de fechar fica desabilitado.</div>
+          </div>
+        </div>
+        <div class="ucf-refs">
+          <span class="ucf-ref-label">Módulos envolvidos</span>
+          <code>tab-reader.ts</code><code>url-normalizer.ts</code><code>tab-grouper.ts</code><code>action-executor.ts</code><code>recovery-manager.ts</code><code>message-dispatcher.ts</code>
+        </div>
+      </div>
+
+      <!-- UC-02 -->
+      <div class="uc-flow-card mt-md">
+        <div class="ucf-tabs">
+          <span class="ucf-pill" style="background:#7c3aed;color:#fff">UC-02</span>
+          <span class="ucf-pill" style="background:var(--gray-200);color:var(--gray-700)">Lote</span>
+          <span class="ucf-pill" style="background:var(--gray-200);color:var(--gray-700)">v1.0</span>
+          <span class="ucf-title">UC-02 — Fechar abas em janelas específicas</span>
+        </div>
+        <div class="ucf-steps">
+          <div class="ucf-step">
+            <div class="ucf-num" style="background:var(--blue)">1</div>
+            <div class="ucf-step-title">Analisar + Selecionar</div>
+            <div class="ucf-step-desc">Usuário analisa, visualiza a lista de domínios e seleciona o domínio desejado.</div>
+          </div>
+          <div class="ucf-connector"></div>
+          <div class="ucf-step">
+            <div class="ucf-num" style="background:#7c3aed">2</div>
+            <div class="ucf-step-title">Escolher janelas</div>
+            <div class="ucf-step-desc">Sistema exibe opções de escopo. Usuário escolhe <strong>"Escolher janelas"</strong>.</div>
+          </div>
+          <div class="ucf-connector"></div>
+          <div class="ucf-step">
+            <div class="ucf-num" style="background:#7c3aed">3</div>
+            <div class="ucf-step-title">Marcar janelas</div>
+            <div class="ucf-step-desc">Sistema exibe cards de janelas com contagem de abas. Usuário marca as janelas via checkbox.</div>
+          </div>
+          <div class="ucf-connector"></div>
+          <div class="ucf-step">
+            <div class="ucf-num" style="background:var(--red)">4</div>
+            <div class="ucf-step-title">Confirmar + Fechar</div>
+            <div class="ucf-step-desc">Botão "Continuar" exibe total de abas afetadas. Usuário clica e confirma o fechamento em lote.</div>
+          </div>
+          <div class="ucf-connector"></div>
+          <div class="ucf-step">
+            <div class="ucf-num" style="background:#34a853">5</div>
+            <div class="ucf-step-title">Feedback + Log</div>
+            <div class="ucf-step-desc">Apenas as abas das janelas selecionadas são fechadas. Log de recuperação criado por 15 min.</div>
+          </div>
+        </div>
+        <div class="ucf-meta">
+          <div class="ucf-meta-block">
+            <div class="ucf-meta-label">Pré-condições</div>
+            <div class="ucf-meta-desc">O domínio possui abas em ao menos 2 janelas diferentes.</div>
+          </div>
+          <div class="ucf-meta-block">
+            <div class="ucf-meta-label">Pós-condições</div>
+            <div class="ucf-meta-desc">Apenas as abas das janelas selecionadas são fechadas. Abas de outras janelas permanecem intactas.</div>
+          </div>
+          <div class="ucf-meta-block">
+            <div class="ucf-meta-label">Fluxo alternativo</div>
+            <div class="ucf-meta-desc">Nenhuma janela selecionada: botão "Continuar" permanece desabilitado. Usuário deve marcar ao menos uma.</div>
+          </div>
+        </div>
+        <div class="ucf-refs">
+          <span class="ucf-ref-label">Módulos envolvidos</span>
+          <code>tab-reader.ts</code><code>tab-grouper.ts</code><code>action-executor.ts</code><code>recovery-manager.ts</code><code>message-dispatcher.ts</code>
+        </div>
+      </div>
+
+      <!-- UC-03 -->
+      <div class="uc-flow-card mt-md">
+        <div class="ucf-tabs">
+          <span class="ucf-pill" style="background:var(--red);color:#fff">UC-03</span>
+          <span class="ucf-pill" style="background:var(--gray-200);color:var(--gray-700)">Individual</span>
+          <span class="ucf-pill" style="background:var(--gray-200);color:var(--gray-700)">v1.0</span>
+          <span class="ucf-title">UC-03 — Fechar uma aba individualmente</span>
+        </div>
+        <div class="ucf-steps">
+          <div class="ucf-step">
+            <div class="ucf-num" style="background:var(--blue)">1</div>
+            <div class="ucf-step-title">Analisar + Navegar</div>
+            <div class="ucf-step-desc">Usuário analisa abas, seleciona um domínio e define o escopo para chegar à lista de abas.</div>
+          </div>
+          <div class="ucf-connector"></div>
+          <div class="ucf-step">
+            <div class="ucf-num" style="background:var(--red)">2</div>
+            <div class="ucf-step-title">Localizar aba</div>
+            <div class="ucf-step-desc">Usuário visualiza a lista com título, URL e favicon de cada aba do escopo selecionado.</div>
+          </div>
+          <div class="ucf-connector"></div>
+          <div class="ucf-step">
+            <div class="ucf-num" style="background:var(--red)">3</div>
+            <div class="ucf-step-title">Fechar com ×</div>
+            <div class="ucf-step-desc">Usuário clica no botão <strong>×</strong> ao lado da aba desejada.</div>
+          </div>
+          <div class="ucf-connector"></div>
+          <div class="ucf-step">
+            <div class="ucf-num" style="background:#5f6368">4</div>
+            <div class="ucf-step-title">Remoção imediata</div>
+            <div class="ucf-step-desc">Sistema remove a aba da lista e a fecha no Chrome via <code>chrome.tabs.remove()</code>. Sem log de recuperação.</div>
+          </div>
+        </div>
+        <div class="ucf-meta">
+          <div class="ucf-meta-block">
+            <div class="ucf-meta-label">Pré-condições</div>
+            <div class="ucf-meta-desc">O usuário está na tela de lista de abas (após selecionar domínio e escopo).</div>
+          </div>
+          <div class="ucf-meta-block">
+            <div class="ucf-meta-label">Pós-condições</div>
+            <div class="ucf-meta-desc">A aba selecionada é fechada no Chrome e removida da lista. As demais abas permanecem.</div>
+          </div>
+          <div class="ucf-meta-block ucf-meta-warn">
+            <div class="ucf-meta-label">⚠ Atenção</div>
+            <div class="ucf-meta-desc">Fechamento individual <strong>não gera log de recuperação</strong>. A ação é irreversível.</div>
+          </div>
+        </div>
+        <div class="ucf-refs">
+          <span class="ucf-ref-label">Módulos envolvidos</span>
+          <code>action-executor.ts</code><code>message-dispatcher.ts</code>
+        </div>
+      </div>
+
+      <!-- UC-04 -->
+      <div class="uc-flow-card mt-md">
+        <div class="ucf-tabs">
+          <span class="ucf-pill" style="background:#34a853;color:#fff">UC-04</span>
+          <span class="ucf-pill" style="background:var(--gray-200);color:var(--gray-700)">Recuperação</span>
+          <span class="ucf-pill" style="background:var(--gray-200);color:var(--gray-700)">v1.0</span>
+          <span class="ucf-title">UC-04 — Recuperar a última ação em lote</span>
+        </div>
+        <div class="ucf-steps">
+          <div class="ucf-step">
+            <div class="ucf-num" style="background:#34a853">1</div>
+            <div class="ucf-step-title">Log disponível</div>
+            <div class="ucf-step-desc">Um fechamento em lote foi realizado há menos de 15 min. Log válido em memória no background.</div>
+          </div>
+          <div class="ucf-connector"></div>
+          <div class="ucf-step">
+            <div class="ucf-num" style="background:#34a853">2</div>
+            <div class="ucf-step-title">Abrir extensão</div>
+            <div class="ucf-step-desc">Usuário abre o popup. Tela inicial exibe botão <strong>"Recuperar"</strong> com tempo restante visível.</div>
+          </div>
+          <div class="ucf-connector"></div>
+          <div class="ucf-step">
+            <div class="ucf-num" style="background:#34a853">3</div>
+            <div class="ucf-step-title">Acionar recuperação</div>
+            <div class="ucf-step-desc">Usuário clica em "Recuperar". Sistema solicita restauração ao background via <code>chrome.runtime.sendMessage</code>.</div>
+          </div>
+          <div class="ucf-connector"></div>
+          <div class="ucf-step">
+            <div class="ucf-num" style="background:#34a853">4</div>
+            <div class="ucf-step-title">Abas restauradas</div>
+            <div class="ucf-step-desc">Sistema recria todas as abas nas janelas originais via <code>chrome.tabs.create()</code>. Log apagado imediatamente.</div>
+          </div>
+        </div>
+        <div class="ucf-meta">
+          <div class="ucf-meta-block">
+            <div class="ucf-meta-label">Pré-condições</div>
+            <div class="ucf-meta-desc">Um fechamento em lote (UC-01 ou UC-02) foi realizado há menos de 15 minutos.</div>
+          </div>
+          <div class="ucf-meta-block">
+            <div class="ucf-meta-label">Pós-condições</div>
+            <div class="ucf-meta-desc">As abas são restauradas nas janelas originais. Log apagado. Botão "Recuperar" desaparece da interface.</div>
+          </div>
+          <div class="ucf-meta-block">
+            <div class="ucf-meta-label">Fluxo alternativo — TTL expirado</div>
+            <div class="ucf-meta-desc">15 minutos decorridos: log apagado automaticamente, botão "Recuperar" não aparece na tela inicial.</div>
+          </div>
+        </div>
+        <div class="ucf-refs">
+          <span class="ucf-ref-label">Módulos envolvidos</span>
+          <code>recovery-manager.ts</code><code>action-executor.ts</code><code>message-dispatcher.ts</code>
+        </div>
+      </div>
+
+      <style>
+        /* UC Flow Cards */
+        .uc-flow-card { background: var(--white); border: 1px solid var(--gray-300); border-radius: var(--radius-md); overflow: hidden; }
+        .ucf-tabs { display: flex; align-items: center; gap: 7px; padding: 14px 18px 12px; border-bottom: 1px solid var(--gray-200); flex-wrap: wrap; }
+        .ucf-pill { font-size: .73rem; font-weight: 700; padding: 2px 9px; border-radius: 20px; letter-spacing: .3px; }
+        .ucf-title { font-size: .95rem; font-weight: 700; color: var(--gray-900); margin-left: 4px; }
+
+        .ucf-steps { display: flex; align-items: stretch; padding: 20px 18px 16px; gap: 0; overflow-x: auto; }
+        .ucf-step { flex: 1; min-width: 140px; display: flex; flex-direction: column; gap: 8px; padding: 0 10px; }
+        .ucf-step:first-child { padding-left: 0; }
+        .ucf-step:last-child { padding-right: 0; }
+        .ucf-num { width: 30px; height: 30px; border-radius: 50%; color: #fff; display: flex; align-items: center; justify-content: center; font-size: .85rem; font-weight: 700; flex-shrink: 0; }
+        .ucf-step-title { font-size: .86rem; font-weight: 700; color: var(--gray-900); line-height: 1.3; }
+        .ucf-step-desc { font-size: .80rem; color: var(--gray-700); line-height: 1.55; }
+        .ucf-step-desc code { font-family: var(--font-mono); font-size: .76rem; background: var(--gray-200); padding: 1px 4px; border-radius: 3px; }
+        .ucf-connector { width: 28px; flex-shrink: 0; display: flex; align-items: flex-start; padding-top: 7px; color: var(--gray-300); font-size: 1.1rem; }
+        .ucf-connector::after { content: "→"; color: var(--gray-300); font-size: 1.2rem; }
+
+        .ucf-meta { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border-top: 1px solid var(--gray-200); }
+        .ucf-meta-block { padding: 12px 18px; border-right: 1px solid var(--gray-200); }
+        .ucf-meta-block:last-child { border-right: none; }
+        .ucf-meta-warn { background: var(--red-faint); }
+        .ucf-meta-label { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .7px; color: var(--gray-700); margin-bottom: 5px; }
+        .ucf-meta-warn .ucf-meta-label { color: var(--red); }
+        .ucf-meta-desc { font-size: .81rem; color: var(--gray-700); line-height: 1.55; }
+        .ucf-meta-desc strong { color: var(--gray-900); }
+
+        .ucf-refs { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; padding: 10px 18px; border-top: 1px solid var(--gray-200); background: var(--gray-100); }
+        .ucf-ref-label { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: var(--gray-500); margin-right: 2px; }
+        .ucf-refs code { font-family: var(--font-mono); font-size: .76rem; background: var(--white); border: 1px solid var(--gray-300); padding: 2px 7px; border-radius: 4px; color: var(--gray-900); }
+      </style>
+    </section>
+    <section class="section" id="arquitetura">
+      <div class="section-header">
+        <div class="section-icon" style="background:#202124">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"/>
+            <line x1="12" y1="22" x2="12" y2="15.5"/><polyline points="22 8.5 12 15.5 2 8.5"/>
+          </svg>
+        </div>
+        <div>
+          <div class="section-title">Arquitetura e Estrutura do Projeto</div>
+          <div class="section-subtitle">Camadas, módulos e organização de arquivos</div>
+        </div>
+        <span class="section-badge-pill">Layered Architecture</span>
+        <span class="section-badge-version">v1.0</span>
+      </div>
+
+      <p class="lead">Arquitetura em camadas com <strong>dependências unidirecionais</strong> — camadas externas dependem das internas. A UI nunca acessa a Chrome API diretamente; toda comunicação passa pelo Background Service Worker via <code>chrome.runtime.sendMessage</code>.</p>
+
+      <!-- ── Layers grid ──────────────────────────────────────────── -->
+      <div class="arch-layers-grid mt-lg">
+
+        <div class="arch-layer-card">
+          <div class="alc-title">UI</div>
+          <div class="alc-sub">Interface do usuário</div>
+          <div class="alc-path"><code>popup/</code></div>
+          <div class="alc-desc">Renderiza o fluxo, captura eventos e envia mensagens tipadas ao background. Não acessa Chrome APIs.</div>
+        </div>
+
+        <div class="arch-layer-card">
+          <div class="alc-title">Orquestração</div>
+          <div class="alc-sub">Background + Dispatcher</div>
+          <div class="alc-path"><code>background/</code></div>
+          <div class="alc-desc">Service Worker que recebe as mensagens da UI, coordena os módulos de negócio e retorna respostas tipadas.</div>
+        </div>
+
+        <div class="arch-layer-card">
+          <div class="alc-title">Módulos</div>
+          <div class="alc-sub">Lógica de negócio pura</div>
+          <div class="alc-path"><code>modules/</code></div>
+          <div class="alc-desc">5 módulos independentes com responsabilidade única. Apenas Executor e Tab Reader acessam Chrome APIs.</div>
+        </div>
+
+        <div class="arch-layer-card">
+          <div class="alc-title">Compartilhado</div>
+          <div class="alc-sub">Tipos &amp; Constantes</div>
+          <div class="alc-path"><code>shared/</code></div>
+          <div class="alc-desc">Tipos TypeScript, interfaces, constantes e utils. Consumidos por todas as camadas sem dependências cruzadas.</div>
+        </div>
+
+      </div>
+
+      <!-- ── Estrutura do projeto banner ─────────────────────────── -->
+      <div class="arch-proj-banner mt-lg">
+        <div class="arch-proj-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+        </div>
+        <div>
+          <div class="arch-proj-title">Estrutura do Projeto</div>
+          <div class="arch-proj-sub">Arquivos essenciais para o funcionamento da extensão.</div>
+        </div>
+      </div>
+
+      <!-- ── Files + Stats ────────────────────────────────────────── -->
+      <div class="arch-body-grid mt-sm">
+
+        <!-- File list -->
+        <div class="arch-files">
+
+          <!-- manifest.json -->
+          <div class="arch-file-row">
+            <div class="arch-file-left">
+              <div class="arch-badge-circle" style="background:#e8f0fe;color:var(--blue)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><path d="M14 2H6a2 2 0 0 0-2 2v16h16V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              </div>
+              <code class="arch-file-name">manifest.json</code>
+            </div>
+            <div class="arch-file-desc">Manifest V3: define permissões (<code>tabs</code>), service worker, action/popup e ícones da extensão.</div>
+          </div>
+
+          <!-- background/ folder -->
+          <div class="arch-file-row arch-file-row--folder">
+            <div class="arch-file-left">
+              <div class="arch-badge-circle" style="background:#fff3cd;color:#856404">
+                <svg viewBox="0 0 24 24" fill="currentColor" width="13" height="13"><path d="M10 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8l-2-2z"/></svg>
+              </div>
+              <code class="arch-file-name">background/</code>
+            </div>
+            <div class="arch-file-desc">Orquestração MV3: recebe mensagens do popup, coordena os módulos e mantém o log de recuperação em memória.</div>
+          </div>
+
+          <!-- background/background.ts -->
+          <div class="arch-file-row arch-file-row--child">
+            <div class="arch-file-left">
+              <div class="arch-badge-circle" style="background:#3178c6;color:#fff">
+                <span style="font-size:.58rem;font-weight:800;letter-spacing:-.5px">TS</span>
+              </div>
+              <code class="arch-file-name">background/background.ts</code>
+            </div>
+            <div class="arch-file-desc">Entry do Service Worker. Registra o listener <code>chrome.runtime.onMessage</code> e inicializa o dispatcher.</div>
+          </div>
+
+          <!-- background/message-dispatcher.ts -->
+          <div class="arch-file-row arch-file-row--child">
+            <div class="arch-file-left">
+              <div class="arch-badge-circle" style="background:#3178c6;color:#fff">
+                <span style="font-size:.58rem;font-weight:800;letter-spacing:-.5px">TS</span>
+              </div>
+              <code class="arch-file-name">background/message-dispatcher.ts</code>
+            </div>
+            <div class="arch-file-desc">Ponto central do runtime: roteia mensagens tipadas, coordena módulos e compõe respostas. <span class="arch-pill" style="background:#f3f0ff;color:#7c3aed">410 linhas</span></div>
+          </div>
+
+          <!-- modules/ folder -->
+          <div class="arch-file-row arch-file-row--folder">
+            <div class="arch-file-left">
+              <div class="arch-badge-circle" style="background:#fff3cd;color:#856404">
+                <svg viewBox="0 0 24 24" fill="currentColor" width="13" height="13"><path d="M10 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8l-2-2z"/></svg>
+              </div>
+              <code class="arch-file-name">modules/</code>
+            </div>
+            <div class="arch-file-desc">5 módulos de negócio independentes, cada um com responsabilidade única e testável isoladamente.</div>
+          </div>
+
+          <!-- tab-reader -->
+          <div class="arch-file-row arch-file-row--child">
+            <div class="arch-file-left">
+              <div class="arch-badge-circle" style="background:#3178c6;color:#fff">
+                <span style="font-size:.58rem;font-weight:800;letter-spacing:-.5px">TS</span>
+              </div>
+              <code class="arch-file-name">modules/tab-reader/tab-reader.ts</code>
+            </div>
+            <div class="arch-file-desc">Abstrai o acesso à <code>chrome.tabs</code> e <code>chrome.windows</code>. Retorna dados brutos sem transformação.</div>
+          </div>
+
+          <!-- url-normalizer -->
+          <div class="arch-file-row arch-file-row--child">
+            <div class="arch-file-left">
+              <div class="arch-badge-circle" style="background:#3178c6;color:#fff">
+                <span style="font-size:.58rem;font-weight:800;letter-spacing:-.5px">TS</span>
+              </div>
+              <code class="arch-file-name">modules/normalizer/url-normalizer.ts</code>
+            </div>
+            <div class="arch-file-desc">Extrai domínio base de uma URL. Ignora <code>chrome://</code>, <code>chrome-extension://</code> e <code>about:</code>; retorna <code>null</code> para URLs inválidas.</div>
+          </div>
+
+          <!-- tab-grouper -->
+          <div class="arch-file-row arch-file-row--child">
+            <div class="arch-file-left">
+              <div class="arch-badge-circle" style="background:#3178c6;color:#fff">
+                <span style="font-size:.58rem;font-weight:800;letter-spacing:-.5px">TS</span>
+              </div>
+              <code class="arch-file-name">modules/grouper/tab-grouper.ts</code>
+            </div>
+            <div class="arch-file-desc">Agrupa abas em <code>DomainGroup[]</code> (por domínio) e <code>WindowGroup[]</code> (por janela dentro de cada domínio).</div>
+          </div>
+
+          <!-- action-executor -->
+          <div class="arch-file-row arch-file-row--child">
+            <div class="arch-file-left">
+              <div class="arch-badge-circle" style="background:#3178c6;color:#fff">
+                <span style="font-size:.58rem;font-weight:800;letter-spacing:-.5px">TS</span>
+              </div>
+              <code class="arch-file-name">modules/executor/action-executor.ts</code>
+            </div>
+            <div class="arch-file-desc">Fecha abas individualmente ou em lote e restaura abas a partir do log de recuperação via <code>chrome.tabs</code>.</div>
+          </div>
+
+          <!-- recovery-manager -->
+          <div class="arch-file-row arch-file-row--child">
+            <div class="arch-file-left">
+              <div class="arch-badge-circle" style="background:#3178c6;color:#fff">
+                <span style="font-size:.58rem;font-weight:800;letter-spacing:-.5px">TS</span>
+              </div>
+              <code class="arch-file-name">modules/recovery/recovery-manager.ts</code>
+            </div>
+            <div class="arch-file-desc">Log temporário em memória da última ação em lote. TTL de 15 minutos com limpeza automática via <code>setTimeout</code>.</div>
+          </div>
+
+          <!-- popup/ folder -->
+          <div class="arch-file-row arch-file-row--folder">
+            <div class="arch-file-left">
+              <div class="arch-badge-circle" style="background:#fff3cd;color:#856404">
+                <svg viewBox="0 0 24 24" fill="currentColor" width="13" height="13"><path d="M10 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8l-2-2z"/></svg>
+              </div>
+              <code class="arch-file-name">popup/</code>
+            </div>
+            <div class="arch-file-desc">Camada de UI: renderiza todos os estados do fluxo e se comunica com o background via mensagens.</div>
+          </div>
+
+          <!-- popup.html -->
+          <div class="arch-file-row arch-file-row--child">
+            <div class="arch-file-left">
+              <div class="arch-badge-circle" style="background:#e34c26;color:#fff">
+                <span style="font-size:.54rem;font-weight:800">HTM</span>
+              </div>
+              <code class="arch-file-name">popup/popup.html</code>
+            </div>
+            <div class="arch-file-desc">Shell HTML da extensão. Apenas estrutura mínima — todo o conteúdo é gerado dinamicamente pelo <code>popup.ts</code>.</div>
+          </div>
+
+          <!-- popup.ts -->
+          <div class="arch-file-row arch-file-row--child">
+            <div class="arch-file-left">
+              <div class="arch-badge-circle" style="background:#3178c6;color:#fff">
+                <span style="font-size:.58rem;font-weight:800;letter-spacing:-.5px">TS</span>
+              </div>
+              <code class="arch-file-name">popup/popup.ts</code>
+            </div>
+            <div class="arch-file-desc">UI completa: gerencia todos os estados (inicial, domínios, janelas, abas, feedback, recuperação) e envia mensagens tipadas. <span class="arch-pill" style="background:var(--blue-faint);color:var(--blue)">864 linhas</span></div>
+          </div>
+
+          <!-- main.css -->
+          <div class="arch-file-row arch-file-row--child">
+            <div class="arch-file-left">
+              <div class="arch-badge-circle" style="background:#563d7c;color:#fff">
+                <span style="font-size:.58rem;font-weight:800;letter-spacing:-.5px">CSS</span>
+              </div>
+              <code class="arch-file-name">popup/styles/main.css</code>
+            </div>
+            <div class="arch-file-desc">Estilos e tema visual do popup. Único arquivo CSS da extensão — usa variáveis CSS para consistência.</div>
+          </div>
+
+          <!-- shared/ folder -->
+          <div class="arch-file-row arch-file-row--folder">
+            <div class="arch-file-left">
+              <div class="arch-badge-circle" style="background:#fff3cd;color:#856404">
+                <svg viewBox="0 0 24 24" fill="currentColor" width="13" height="13"><path d="M10 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8l-2-2z"/></svg>
+              </div>
+              <code class="arch-file-name">shared/</code>
+            </div>
+            <div class="arch-file-desc">Contratos centrais: tipos TypeScript, constantes e utilitários consumidos por todas as camadas.</div>
+          </div>
+
+          <!-- shared/types/ -->
+          <div class="arch-file-row arch-file-row--child">
+            <div class="arch-file-left">
+              <div class="arch-badge-circle" style="background:#3178c6;color:#fff">
+                <span style="font-size:.58rem;font-weight:800;letter-spacing:-.5px">TS</span>
+              </div>
+              <code class="arch-file-name">shared/types/</code>
+            </div>
+            <div class="arch-file-desc">8 arquivos de tipos: <code>Tab</code>, <code>DomainGroup</code>, <code>WindowGroup</code>, <code>ActionResult</code>, <code>RecoveryLog</code>, mensagens e estado da UI. Sem lógica.</div>
+          </div>
+
+          <!-- shared/constants/ + shared/utils/ -->
+          <div class="arch-file-row arch-file-row--child">
+            <div class="arch-file-left">
+              <div class="arch-badge-circle" style="background:#3178c6;color:#fff">
+                <span style="font-size:.58rem;font-weight:800;letter-spacing:-.5px">TS</span>
+              </div>
+              <code class="arch-file-name">shared/constants/ · shared/utils/</code>
+            </div>
+            <div class="arch-file-desc">Constantes de aplicação (TTL, mensagens de erro) e funções utilitárias de formatação e validação.</div>
+          </div>
+
+        </div>
+
+        <!-- Stats sidebar -->
+        <div class="arch-stats">
+
+          <div class="arch-stat-card">
+            <div class="arch-stat-badge" style="background:#3178c6;color:#fff">TS</div>
+            <div class="arch-stat-number">30</div>
+            <div class="arch-stat-label">Arquivos TypeScript</div>
+          </div>
+
+          <div class="arch-stat-card">
+            <div class="arch-stat-badge" style="background:#563d7c;color:#fff">CSS</div>
+            <div class="arch-stat-number">1</div>
+            <div class="arch-stat-label">Arquivo CSS (popup)</div>
+          </div>
+
+          <div class="arch-stat-card">
+            <div class="arch-stat-badge" style="background:var(--blue);color:#fff">&lt;900</div>
+            <div class="arch-stat-number">864</div>
+            <div class="arch-stat-label">Maior arquivo (linhas) — <code>popup.ts</code></div>
+          </div>
+
+          <div class="arch-stat-card">
+            <div class="arch-stat-badge" style="background:#34a853;color:#fff">MOD</div>
+            <div class="arch-stat-number">5</div>
+            <div class="arch-stat-label">Módulos de negócio independentes</div>
+          </div>
+
+          <div class="arch-stat-card">
+            <div class="arch-stat-badge" style="background:#7c3aed;color:#fff">0</div>
+            <div class="arch-stat-number">Zero</div>
+            <div class="arch-stat-label">Dependências de runtime</div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- ── Module responsibility table ─────────────────────────── -->
+      <div class="card mt-lg">
+        <div class="card-label">Responsabilidade por Módulo</div>
+        <table class="arch-table mt-sm">
+          <thead>
+            <tr><th>Módulo</th><th>Arquivo</th><th>Responsabilidade</th><th>Chrome API</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="mod-badge" style="background:#e8f0fe;color:var(--blue)">UI Layer</span></td>
+              <td><code>popup.ts</code></td>
+              <td>Renderiza fluxo, captura eventos, envia mensagens</td>
+              <td><span class="no-badge">Não</span></td>
+            </tr>
+            <tr>
+              <td><span class="mod-badge" style="background:#f3f0ff;color:#7c3aed">Dispatcher</span></td>
+              <td><code>message-dispatcher.ts</code></td>
+              <td>Roteamento, validação e orquestração de mensagens</td>
+              <td><span class="no-badge">Não diretamente</span></td>
+            </tr>
+            <tr>
+              <td><span class="mod-badge" style="background:#e8f0fe;color:var(--blue)">Tab Reader</span></td>
+              <td><code>tab-reader.ts</code></td>
+              <td>Leitura de abas e janelas — abstração da API</td>
+              <td><span class="yes-badge">Sim</span></td>
+            </tr>
+            <tr>
+              <td><span class="mod-badge" style="background:#e0f7fa;color:#0097a7">Normalizer</span></td>
+              <td><code>url-normalizer.ts</code></td>
+              <td>Extrai domínio base de URLs (<code>string | null</code>)</td>
+              <td><span class="no-badge">Não</span></td>
+            </tr>
+            <tr>
+              <td><span class="mod-badge" style="background:#f3f0ff;color:#7c3aed">Grouper</span></td>
+              <td><code>tab-grouper.ts</code></td>
+              <td>Agrupa abas em <code>DomainGroup[]</code> e <code>WindowGroup[]</code></td>
+              <td><span class="no-badge">Não</span></td>
+            </tr>
+            <tr>
+              <td><span class="mod-badge" style="background:var(--red-faint);color:var(--red)">Executor</span></td>
+              <td><code>action-executor.ts</code></td>
+              <td>Fecha e restaura abas via <code>chrome.tabs</code></td>
+              <td><span class="yes-badge">Sim</span></td>
+            </tr>
+            <tr>
+              <td><span class="mod-badge" style="background:#e6f4ea;color:#34a853">Recovery</span></td>
+              <td><code>recovery-manager.ts</code></td>
+              <td>Log temporário em memória (TTL 15 min)</td>
+              <td><span class="no-badge">Não</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <style>
+        /* Section header badges */
+        .section-badge-pill { margin-left: auto; background: var(--blue-faint); color: var(--blue); font-size: .75rem; font-weight: 700; padding: 4px 12px; border-radius: 20px; border: 1px solid #c5d9fd; white-space: nowrap; }
+        .section-badge-version { background: var(--gray-200); color: var(--gray-700); font-size: .72rem; font-weight: 700; padding: 4px 10px; border-radius: 20px; white-space: nowrap; }
+
+        /* Layers grid */
+        .arch-layers-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+        .arch-layer-card { background: var(--white); border: 1px solid var(--gray-300); border-radius: var(--radius-md); padding: 18px 16px; display: flex; flex-direction: column; gap: 5px; }
+        .alc-title { font-size: .95rem; font-weight: 700; color: var(--gray-900); }
+        .alc-sub { font-size: .78rem; color: var(--gray-500); margin-bottom: 4px; }
+        .alc-path code { font-family: var(--font-mono); font-size: .76rem; background: var(--blue-faint); color: var(--blue); padding: 2px 8px; border-radius: 4px; }
+        .alc-desc { font-size: .80rem; color: var(--gray-700); line-height: 1.55; margin-top: 4px; }
+
+        /* Banner */
+        .arch-proj-banner { background: linear-gradient(135deg, var(--blue) 0%, #7c3aed 100%); border-radius: var(--radius-md) var(--radius-md) 0 0; padding: 18px 22px; display: flex; align-items: center; gap: 14px; }
+        .arch-proj-icon { width: 42px; height: 42px; background: rgba(255,255,255,.18); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .arch-proj-title { font-size: 1rem; font-weight: 700; color: #fff; }
+        .arch-proj-sub { font-size: .82rem; color: rgba(255,255,255,.8); margin-top: 2px; }
+
+        /* Body grid */
+        .arch-body-grid { display: grid; grid-template-columns: 1fr 200px; gap: 0; background: var(--white); border: 1px solid var(--gray-300); border-top: none; border-radius: 0 0 var(--radius-md) var(--radius-md); overflow: hidden; }
+
+        /* Files */
+        .arch-files { padding: 4px 0; }
+        /* File rows — 2-column split layout */
+        .arch-file-row { display: grid; grid-template-columns: 240px 1fr; align-items: center; padding: 10px 20px; border-bottom: 1px solid var(--gray-200); gap: 16px; }
+        .arch-file-row:last-child { border-bottom: none; }
+        .arch-file-row--folder { background: #fafafa; }
+        .arch-file-row--folder .arch-file-name { font-weight: 800; color: var(--gray-900); }
+        .arch-file-row--child { padding-left: 32px; }
+        .arch-file-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
+        .arch-badge-circle { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .arch-file-name { font-family: var(--font-mono); font-size: .79rem; font-weight: 700; color: var(--gray-900); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; background: none; padding: 0; }
+        .arch-file-desc { font-size: .81rem; color: var(--gray-700); line-height: 1.55; }
+        .arch-file-desc code { font-family: var(--font-mono); font-size: .76rem; background: var(--gray-200); padding: 1px 4px; border-radius: 3px; }
+        .arch-pill { display: inline-block; font-size: .72rem; font-weight: 700; padding: 1px 7px; border-radius: 10px; margin-left: 4px; }
+
+        /* Stats */
+        .arch-stats { border-left: 1px solid var(--gray-200); display: flex; flex-direction: column; }
+        .arch-stat-card { padding: 18px 16px; border-bottom: 1px solid var(--gray-200); display: flex; flex-direction: column; gap: 4px; }
+        .arch-stat-card:last-child { border-bottom: none; }
+        .arch-stat-badge { display: inline-block; font-size: .68rem; font-weight: 700; padding: 2px 7px; border-radius: 4px; align-self: flex-start; letter-spacing: .4px; }
+        .arch-stat-number { font-size: 1.6rem; font-weight: 800; color: var(--gray-900); line-height: 1.1; }
+        .arch-stat-label { font-size: .76rem; color: var(--gray-700); line-height: 1.4; }
+        .arch-stat-label code { font-family: var(--font-mono); font-size: .73rem; background: var(--gray-200); padding: 1px 4px; border-radius: 3px; }
+
+        /* Module table */
+        .arch-table { width: 100%; border-collapse: collapse; font-size: .84rem; }
+        .arch-table thead { background: var(--gray-100); }
+        .arch-table th { padding: 8px 12px; text-align: left; font-size: .74rem; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--gray-700); border-bottom: 2px solid var(--gray-300); }
+        .arch-table td { padding: 9px 12px; border-bottom: 1px solid var(--gray-200); vertical-align: middle; color: var(--gray-700); line-height: 1.4; }
+        .arch-table tr:last-child td { border-bottom: none; }
+        .arch-table code { font-family: var(--font-mono); font-size: .78rem; background: var(--gray-200); padding: 1px 4px; border-radius: 3px; }
+        .mod-badge { display: inline-block; font-size: .76rem; font-weight: 700; padding: 2px 8px; border-radius: 4px; white-space: nowrap; }
+        .yes-badge { display: inline-block; font-size: .75rem; font-weight: 700; color: #b71c1c; background: var(--red-faint); padding: 2px 8px; border-radius: 10px; }
+        .no-badge  { display: inline-block; font-size: .75rem; font-weight: 700; color: #2e7d32; background: #e8f5e9; padding: 2px 8px; border-radius: 10px; }
+      </style>
+    </section>
+    <section class="section" id="tecnologias">
+      <div class="section-header">
+        <div class="section-icon" style="background:#4285f4">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+          </svg>
+        </div>
+        <div>
+          <div class="section-title">Tecnologias</div>
+          <div class="section-subtitle">Stack, ferramentas e dependências</div>
+        </div>
+      </div>
+
+      <p class="lead">O TDE não tem <strong>nenhuma dependência de runtime</strong> — apenas <code>devDependencies</code>. Tudo que chega ao usuário final é código puro bundlado pelo Webpack.</p>
+
+      <div class="tech-grid mt-lg">
+
+        <div class="tech-card">
+          <div class="tech-header" style="background:var(--blue)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+            Plataforma
+          </div>
+          <div class="tech-body">
+            <div class="tech-item">
+              <span class="tech-name">Chrome Extension</span>
+              <span class="tech-version">Manifest V3</span>
+              <span class="tech-desc">Especificação vigente do Chrome. Service Workers em vez de background pages persistentes.</span>
+            </div>
+            <div class="tech-item">
+              <span class="tech-name">Chrome API</span>
+              <span class="tech-version">88+</span>
+              <span class="tech-desc">Apenas <code>chrome.tabs</code>, <code>chrome.windows</code> e <code>chrome.runtime</code>. Permissão <code>"tabs"</code> no manifest.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="tech-card">
+          <div class="tech-header" style="background:#3178c6">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            TypeScript
+          </div>
+          <div class="tech-body">
+            <div class="tech-item">
+              <span class="tech-name">TypeScript</span>
+              <span class="tech-version">5.3.3</span>
+              <span class="tech-desc">Compilado para <code>ES2020</code> com <code>strict: true</code>. Todos os módulos totalmente tipados.</span>
+            </div>
+            <div class="tech-item">
+              <span class="tech-name">@types/chrome</span>
+              <span class="tech-version">^0.0.260</span>
+              <span class="tech-desc">Definições de tipo para a Chrome Extension API.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="tech-card">
+          <div class="tech-header" style="background:#8dd6f9; color:#1a1a2e">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#1a1a2e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+            Bundler
+          </div>
+          <div class="tech-body">
+            <div class="tech-item">
+              <span class="tech-name">Webpack</span>
+              <span class="tech-version">5.104.1</span>
+              <span class="tech-desc">2 entry points: <code>background.ts</code> e <code>popup.ts</code>. Output em <code>dist/</code>.</span>
+            </div>
+            <div class="tech-item">
+              <span class="tech-name">ts-loader</span>
+              <span class="tech-version">9.5.1</span>
+              <span class="tech-desc">Transpila TypeScript diretamente no pipeline do Webpack.</span>
+            </div>
+            <div class="tech-item">
+              <span class="tech-name">copy-webpack-plugin</span>
+              <span class="tech-version">12.0.2</span>
+              <span class="tech-desc">Copia <code>manifest.json</code>, HTML, CSS e assets para <code>dist/</code> sem transformação.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="tech-card">
+          <div class="tech-header" style="background:#c21325">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            Testes
+          </div>
+          <div class="tech-body">
+            <div class="tech-item">
+              <span class="tech-name">Jest</span>
+              <span class="tech-version">29.7.0</span>
+              <span class="tech-desc">Framework de testes. 62 testes em 6 suites (5 unit + 1 integration). Ambiente <code>node</code>. Configurado em <code>config/jest.config.js</code>.</span>
+            </div>
+            <div class="tech-item">
+              <span class="tech-name">ts-jest</span>
+              <span class="tech-version">29.1.1</span>
+              <span class="tech-desc">Transforma TypeScript diretamente para o Jest sem etapa de compilação separada. Usa o mesmo <code>tsconfig.json</code> do projeto.</span>
+            </div>
+            <div class="tech-item">
+              <span class="tech-name">@types/jest</span>
+              <span class="tech-version">29.5.x</span>
+              <span class="tech-desc">Tipos globais de <code>describe</code>, <code>it</code>, <code>expect</code>, <code>jest.fn()</code> e afins.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="tech-card">
+          <div class="tech-header" style="background:#4b32c3">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><circle cx="12" cy="12" r="10"/><path d="M8.56 2.75c4.37 6.03 6.02 9.42 8.03 17.72m2.54-15.38c-3.72 4.35-8.94 5.66-16.88 5.85m19.5 1.9c-3.5-.93-6.63-.82-8.94 0-2.58.92-5.01 2.86-7.44 6.32"/></svg>
+            Qualidade de Código
+          </div>
+          <div class="tech-body">
+            <div class="tech-item">
+              <span class="tech-name">ESLint</span>
+              <span class="tech-version">8.56.0</span>
+              <span class="tech-desc">Linting TypeScript com <code>@typescript-eslint</code>. Configurado em <code>config/eslint.config.js</code>.</span>
+            </div>
+            <div class="tech-item">
+              <span class="tech-name">Prettier</span>
+              <span class="tech-version">3.1.1</span>
+              <span class="tech-desc">Formatação automática de código configurada em <code>config/.prettierrc</code>.</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- No runtime deps -->  
+      <div class="info-box mt-md">
+        <strong>Zero dependências de runtime</strong><br/>
+        O <code>package.json</code> contém apenas <code>devDependencies</code>. O bundle final entregue ao Chrome é composto apenas por código JavaScript puro gerado pelo Webpack — sem bibliotecas externas na extensão.
+      </div>
+
+      <style>
+        .tech-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .tech-card { background: var(--white); border: 1px solid var(--gray-300); border-radius: var(--radius-md); overflow: hidden; }
+        .tech-header { display: flex; align-items: center; gap: 8px; padding: 10px 14px; font-size: .82rem; font-weight: 700; }
+        .tech-body { padding: 12px 14px; display: flex; flex-direction: column; gap: 12px; }
+        .tech-item { display: flex; flex-direction: column; gap: 3px; }
+        .tech-name { font-size: .86rem; font-weight: 700; color: var(--gray-900); font-family: var(--font-mono); }
+        .tech-version { font-size: .75rem; color: var(--gray-500); font-family: var(--font-mono); }
+        .tech-desc { font-size: .82rem; color: var(--gray-700); line-height: 1.5; }
+        .tech-desc code { font-family: var(--font-mono); font-size: .78rem; background: var(--gray-200); padding: 1px 4px; border-radius: 3px; }
+      </style>
+    </section>
+
+    <!-- ══ 11. DESENVOLVIMENTO ════════════════════════════════════════ -->
+    <section class="section" id="desenvolvimento">
+      <div class="section-header">
+        <div class="section-icon" style="background:#34a853">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 16.1A5 5 0 0 1 5.9 20M2 12.05A9 9 0 0 1 9.95 20M2 8V6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-6"/>
+            <line x1="2" y1="20" x2="2.01" y2="20"/>
+          </svg>
+        </div>
+        <div>
+          <div class="section-title">Desenvolvimento</div>
+          <div class="section-subtitle">Setup do ambiente, build e contribuição</div>
+        </div>
+      </div>
+
+      <p class="lead">Guia para configurar o ambiente de desenvolvimento, entender a estrutura do projeto e contribuir com o código.</p>
+
+      <!-- Structure -->
+      <div class="card mt-lg">
+        <div class="card-label">Estrutura do Projeto</div>
+        <div class="dev-tree mt-sm">
+          <div class="dt-item dt-dir">📁 tab-domain-executor/</div>
+          <div class="dt-item dt-l1">📄 package.json <span class="dt-comment">— scripts, devDependencies</span></div>
+          <div class="dt-item dt-l1">📄 tsconfig.json <span class="dt-comment">— target ES2020, strict: true</span></div>
+          <div class="dt-item dt-l1">📄 webpack.config.js <span class="dt-comment">— entry: background.ts + popup.ts</span></div>
+          <div class="dt-item dt-l1 dt-dir">📁 config/</div>
+          <div class="dt-item dt-l2">📄 eslint.config.js · jest.config.js</div>
+          <div class="dt-item dt-l1 dt-dir">📁 src/</div>
+          <div class="dt-item dt-l2 dt-dir">📁 background/ <span class="dt-comment">— Service Worker + dispatcher</span></div>
+          <div class="dt-item dt-l2 dt-dir">📁 popup/ <span class="dt-comment">— UI: HTML, TS, CSS, state</span></div>
+          <div class="dt-item dt-l2 dt-dir">📁 modules/ <span class="dt-comment">— executor, grouper, normalizer, recovery, tab-reader</span></div>
+          <div class="dt-item dt-l2 dt-dir">📁 shared/ <span class="dt-comment">— types, constants, utils</span></div>
+          <div class="dt-item dt-l1 dt-dir">📁 tests/</div>
+          <div class="dt-item dt-l2">� setup.ts <span class="dt-comment">— mock global da Chrome API (runtime, tabs, windows)</span></div>
+          <div class="dt-item dt-l2 dt-dir">📁 unit/modules/</div>
+          <div class="dt-item dt-l3">📄 normalizer.test.ts · grouper.test.ts · tab-reader.test.ts · executor.test.ts · recovery.test.ts</div>
+          <div class="dt-item dt-l2 dt-dir">📁 integration/</div>
+          <div class="dt-item dt-l3">📄 dispatcher.test.ts <span class="dt-comment">— fluxo end-to-end via message-dispatcher</span></div>
+          <div class="dt-item dt-l2 dt-dir">📁 mocks/</div>
+          <div class="dt-item dt-l3">📄 chrome.mock.ts · tab.fixtures.ts</div>
+          <div class="dt-item dt-l1 dt-dir">📁 dist/ <span class="dt-comment">— output do build (gerado)</span></div>
+        </div>
+      </div>
+
+      <!-- Scripts -->
+      <div class="card mt-md">
+        <div class="card-label">Scripts disponíveis</div>
+        <table class="scripts-table mt-sm">
+          <thead><tr><th>Comando</th><th>Descrição</th></tr></thead>
+          <tbody>
+            <tr><td><code>npm run dev</code></td><td>Build em modo desenvolvimento com <strong>watch</strong> — recompila ao salvar</td></tr>
+            <tr><td><code>npm run build</code></td><td>Build de produção em <code>dist/</code> (minificado)</td></tr>
+            <tr><td><code>npm test</code></td><td>Executa todos os testes (unit + integration)</td></tr>
+            <tr><td><code>npm run test:watch</code></td><td>Testes em modo watch</td></tr>
+            <tr><td><code>npm run test:coverage</code></td><td>Testes com relatório de cobertura</td></tr>
+            <tr><td><code>npm run test:integration</code></td><td>Executa apenas os testes de integração</td></tr>
+            <tr><td><code>npm run lint</code></td><td>Verifica erros de lint no TypeScript</td></tr>
+            <tr><td><code>npm run lint:fix</code></td><td>Corrige automaticamente erros de lint</td></tr>
+            <tr><td><code>npm run format</code></td><td>Formata o código com Prettier</td></tr>
+            <tr><td><code>npm run format:check</code></td><td>Verifica formatação sem modificar os arquivos</td></tr>
+            <tr><td><code>npm run clean</code></td><td>Remove <code>dist/</code> e <code>coverage/</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Workflow -->
+      <div class="card mt-md">
+        <div class="card-label">Workflow de Desenvolvimento</div>
+        <div class="workflow mt-sm">
+          <div class="wf-step">
+            <div class="wf-num">1</div>
+            <div class="wf-content">
+              <strong>Iniciar o watcher</strong>
+              <div class="code-block" style="margin-top:6px">
+                <div class="code-bar"><span class="code-dot red"></span><span class="code-dot amber"></span><span class="code-dot green"></span><span class="code-lang">bash</span></div>
+                <pre>npm run dev</pre>
+              </div>
+            </div>
+          </div>
+          <div class="wf-connector"></div>
+          <div class="wf-step">
+            <div class="wf-num">2</div>
+            <div class="wf-content">
+              <strong>Editar arquivos em <code>src/</code></strong>
+              <p class="wf-desc">O Webpack recompila automaticamente ao salvar. Os arquivos em <code>dist/</code> são atualizados.</p>
+            </div>
+          </div>
+          <div class="wf-connector"></div>
+          <div class="wf-step">
+            <div class="wf-num">3</div>
+            <div class="wf-content">
+              <strong>Recarregar a extensão no Chrome</strong>
+              <p class="wf-desc">Acesse <code>chrome://extensions</code> e clique no ícone 🔄 ao lado do TDE para recarregar.</p>
+            </div>
+          </div>
+          <div class="wf-connector"></div>
+          <div class="wf-step">
+            <div class="wf-num">4</div>
+            <div class="wf-content">
+              <strong>Testar a mudança</strong>
+              <p class="wf-desc">Clique no ícone da extensão para abrir o popup e testar o comportamento esperado.</p>
+            </div>
+          </div>
+          <div class="wf-connector"></div>
+          <div class="wf-step">
+            <div class="wf-num">5</div>
+            <div class="wf-content">
+              <strong>Rodar os testes</strong>
+              <div class="code-block" style="margin-top:6px">
+                <div class="code-bar"><span class="code-dot red"></span><span class="code-dot amber"></span><span class="code-dot green"></span><span class="code-lang">bash</span></div>
+                <pre>npm test</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tests card -->
+      <div class="card mt-md">
+        <div class="card-label">Suites de Testes</div>
+        <table class="scripts-table mt-sm">
+          <thead><tr><th>Suite</th><th>Tipo</th><th>O que cobre</th><th style="text-align:center">Testes</th></tr></thead>
+          <tbody>
+            <tr><td><code>normalizer.test.ts</code></td><td>Unit</td><td><code>normalizeUrl</code>, <code>extractDomain</code> — URLs válidas, <code>www.</code>, <code>chrome://</code></td><td style="text-align:center">4</td></tr>
+            <tr><td><code>tab-reader.test.ts</code></td><td>Unit</td><td><code>getAllTabs</code>, <code>getAllWindows</code>, <code>getTabsByWindowId</code> — mock de <code>chrome.tabs</code> e <code>chrome.windows</code></td><td style="text-align:center">6</td></tr>
+            <tr><td><code>grouper.test.ts</code></td><td>Unit</td><td><code>groupByDomain</code>, <code>groupByWindow</code>, <code>filterTabsByScope</code> — agrupamento, ordenação, filtragem por escopo</td><td style="text-align:center">14</td></tr>
+            <tr><td><code>executor.test.ts</code></td><td>Unit</td><td><code>closeSingleTab</code>, <code>closeBulkTabs</code>, <code>restoreTabs</code> — sucesso, falha e sucesso parcial</td><td style="text-align:center">10</td></tr>
+            <tr><td><code>recovery.test.ts</code></td><td>Unit</td><td><code>storeRecoveryLog</code>, <code>getRecoveryLog</code>, <code>hasRecoverableAction</code>, <code>clearRecoveryLog</code> — TTL com fake timers</td><td style="text-align:center">12</td></tr>
+            <tr><td><code>dispatcher.test.ts</code></td><td>Integration</td><td>Todos os 7 <code>MessageType</code> via <code>handle()</code> — validação de payload, roteamento e respostas compostas</td><td style="text-align:center">16</td></tr>
+          </tbody>
+          <tfoot>
+            <tr style="background:var(--gray-100)"><td colspan="3" style="font-weight:700;color:var(--gray-900)">Total</td><td style="text-align:center;font-weight:700;color:var(--blue)">62</td></tr>
+          </tfoot>
+        </table>
+
+        <div class="test-thresholds mt-sm">
+          <div class="thr-label">Thresholds mínimos de cobertura (<code>npm run test:coverage</code>)</div>
+          <div class="thr-grid">
+            <div class="thr-item"><span class="thr-metric">Branches</span><span class="thr-value">70%</span></div>
+            <div class="thr-item"><span class="thr-metric">Functions</span><span class="thr-value">75%</span></div>
+            <div class="thr-item"><span class="thr-metric">Lines</span><span class="thr-value">80%</span></div>
+            <div class="thr-item"><span class="thr-metric">Statements</span><span class="thr-value">80%</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TypeScript config highlights -->
+      <div class="card mt-md">
+        <div class="card-label">Configurações TypeScript relevantes</div>
+        <div class="ts-config-grid mt-sm">
+          <div class="ts-config-item"><span class="ts-key">target</span><code>ES2020</code><span class="ts-note">Chrome 88+ suporta plenamente</span></div>
+          <div class="ts-config-item"><span class="ts-key">strict</span><code>true</code><span class="ts-note">Tipagem estrita obrigatória</span></div>
+          <div class="ts-config-item"><span class="ts-key">module</span><code>ESNext</code><span class="ts-note">Bundled pelo Webpack</span></div>
+          <div class="ts-config-item"><span class="ts-key">sourceMap</span><code>true</code><span class="ts-note">Para debugging em dev</span></div>
+          <div class="ts-config-item"><span class="ts-key">baseUrl</span><code>./src</code><span class="ts-note">Alias <code>@/</code> aponta para <code>src/</code></span></div>
+          <div class="ts-config-item"><span class="ts-key">types</span><code>["chrome", "node", "jest"]</code><span class="ts-note">Tipos globais disponíveis</span></div>
+        </div>
+      </div>
+
+      <style>
+        /* File tree */
+        .dev-tree { font-family: var(--font-mono); font-size: .82rem; line-height: 1.6; }
+        .dt-item { color: var(--gray-700); padding: 1px 0; }
+        .dt-dir { color: var(--gray-900); font-weight: 600; }
+        .dt-l1 { padding-left: 18px; }
+        .dt-l2 { padding-left: 36px; }
+        .dt-l3 { padding-left: 54px; }
+        .dt-comment { font-family: var(--font); font-size: .78rem; color: var(--gray-500); font-weight: 400; }
+
+        /* Scripts table */
+        .scripts-table { width: 100%; border-collapse: collapse; font-size: .84rem; }
+        .scripts-table thead { background: var(--gray-100); }
+        .scripts-table th { padding: 8px 12px; text-align: left; font-size: .74rem; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--gray-700); border-bottom: 2px solid var(--gray-300); }
+        .scripts-table td { padding: 8px 12px; border-bottom: 1px solid var(--gray-200); color: var(--gray-700); line-height: 1.5; }
+        .scripts-table tr:last-child td { border-bottom: none; }
+        .scripts-table td:first-child { width: 220px; }
+        .scripts-table code { font-family: var(--font-mono); font-size: .79rem; background: var(--gray-200); padding: 1px 5px; border-radius: 3px; color: var(--gray-900); }
+
+        /* Workflow */
+        .workflow { display: flex; flex-direction: column; }
+        .wf-step { display: flex; gap: 12px; align-items: flex-start; }
+        .wf-num { width: 28px; height: 28px; border-radius: 50%; background: var(--blue); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: .82rem; flex-shrink: 0; margin-top: 2px; }
+        .wf-content { flex: 1; padding-bottom: 2px; }
+        .wf-content strong { font-size: .88rem; color: var(--gray-900); }
+        .wf-content strong code { font-family: var(--font-mono); font-size: .83rem; background: var(--gray-200); padding: 1px 4px; border-radius: 3px; }
+        .wf-desc { font-size: .83rem; color: var(--gray-700); margin-top: 4px; line-height: 1.5; }
+        .wf-desc code { font-family: var(--font-mono); font-size: .79rem; background: var(--gray-200); padding: 1px 4px; border-radius: 3px; }
+        .wf-connector { width: 2px; background: var(--gray-200); height: 12px; margin-left: 13px; }
+
+        /* TS config grid */
+        .ts-config-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .ts-config-item { background: var(--gray-100); border-radius: var(--radius-sm); padding: 10px 14px; display: flex; flex-direction: column; gap: 3px; }
+        .ts-key { font-family: var(--font-mono); font-size: .78rem; font-weight: 700; color: var(--blue); }
+        .ts-config-item code { font-family: var(--font-mono); font-size: .78rem; color: var(--gray-900); background: none; padding: 0; }
+        .ts-note { font-size: .78rem; color: var(--gray-500); }
+        .ts-note code { font-family: var(--font-mono); font-size: .74rem; background: var(--gray-200); padding: 1px 3px; border-radius: 3px; }
+
+        /* Test thresholds */
+        .test-thresholds { border-top: 1px solid var(--gray-200); padding-top: 12px; }
+        .thr-label { font-size: .78rem; color: var(--gray-600); margin-bottom: 8px; }
+        .thr-label code { font-family: var(--font-mono); font-size: .75rem; background: var(--gray-200); padding: 1px 4px; border-radius: 3px; }
+        .thr-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+        .thr-item { background: var(--gray-100); border-radius: var(--radius-sm); padding: 10px 12px; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .thr-metric { font-size: .74rem; font-weight: 700; color: var(--gray-600); text-transform: uppercase; letter-spacing: .4px; }
+        .thr-value { font-size: 1.1rem; font-weight: 800; color: var(--blue); font-family: var(--font-mono); }
+        .scripts-table tfoot td { padding: 8px 12px; border-top: 2px solid var(--gray-300); }
+      </style>
+    </section>
+
+<!-- ─── Active nav highlight on scroll ─────────────────────────────────── -->
+<script>
+  const sections = document.querySelectorAll('.section');
+  const navItems = document.querySelectorAll('.nav-item');
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navItems.forEach(item => item.classList.remove('active'));
+        const id = entry.target.id;
+        const active = document.querySelector(`.nav-item[href="#${id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+
+  sections.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>
